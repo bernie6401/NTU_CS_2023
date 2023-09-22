@@ -1,6 +1,4 @@
-import random
 from tqdm import trange
-import base64
 
 def initialize():
     f = '0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0'
@@ -23,9 +21,6 @@ def cal_correlation(a, b):
         if a[i] == b[i]:
             count += 1
     return count / 200
-
-def decimalToBinary(n):
-    return bin(n).replace("0b", "")
 
 class LFSR:
     def __init__(self, tap, state):
@@ -58,18 +53,18 @@ def guess_state(state_size_pow, tap, cipher_text):
         guess_text = []
         lfsr = LFSR(tap, guess_state)
 
-        for _ in range(232):
-            lfsr.getbit()
-
         for _ in range(200):
             guess_text.append(lfsr.getbit())
-            
+
+        for _ in range(216):
+            lfsr.getbit()
+
         acc = cal_correlation(guess_text, cipher_text)
         if acc >= 0.70:
             # print(guess_state)
             result.append(guess_state)
 
-        tmp = decimalToBinary(state + 1 + 3187671)
+        tmp = bin(state)[2:]
         guess_state = [0 for i in range(state_size_pow - len(tmp))] + [int(tmp[i]) for i in range(len(tmp))]
 
     return result
@@ -84,18 +79,18 @@ def final_guess(state_size_pow, tap, cipher_text, b_guess_state, c_guess_state):
         lfsr3 = LFSR(tap[2], c_guess_state)
         cipher = triLFSR(lfsr1, lfsr2, lfsr3)
 
-        for _ in range(232):
-            cipher.getbit()
-
         for _ in range(200):
             guess_text.append(cipher.getbit())
+
+        for _ in range(216):
+            cipher.getbit()
             
         acc = cal_correlation(guess_text, cipher_text)
         if acc == 1:
             print(guess_state)
             return guess_state
 
-        tmp = decimalToBinary(state + 1 + 13421773 * 8)
+        tmp = bin(state)[2:]
         guess_state = [0 for i in range(state_size_pow - len(tmp))] + [int(tmp[i]) for i in range(len(tmp))]
 
 if __name__ == '__main__':
