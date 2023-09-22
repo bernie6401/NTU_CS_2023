@@ -61,8 +61,9 @@ def guess_state(state_size_pow, tap, cipher_text):
 
         acc = cal_correlation(guess_text, cipher_text)
         if acc >= 0.70:
-            # print(guess_state)
+            print(guess_state)
             result.append(guess_state)
+            break
 
         tmp = bin(state)[2:]
         guess_state = [0 for i in range(state_size_pow - len(tmp))] + [int(tmp[i]) for i in range(len(tmp))]
@@ -97,9 +98,9 @@ if __name__ == '__main__':
     cipher_flag, cipher_text = initialize()
 
     tap = [[0, 1, 2, 5], [0, 1, 2, 5], [0, 1, 2, 5]]
-    B_guess_state = guess_state(23, tap[1], cipher_text)    # [1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0]
-    C_guess_state = guess_state(27, tap[2], cipher_text)  # [0, 1, 1, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0]
-    A_guess_state = final_guess(19, tap, cipher_text, B_guess_state[0], C_guess_state[0]) # [1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0]
+    B_guess_state = guess_state(23, tap[1], cipher_text)    # 
+    C_guess_state = guess_state(27, tap[2], cipher_text)  # 
+    A_guess_state = final_guess(19, tap, cipher_text, B_guess_state[0], C_guess_state[0]) # 
     # B_guess_state = [1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0]
     # C_guess_state = [0, 1, 1, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0]
     # A_guess_state = [1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0]
