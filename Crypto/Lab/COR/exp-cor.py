@@ -49,7 +49,7 @@ def guess_state(state_size_pow, tap, cipher_text):
     guess_state = [0 for _ in range(state_size_pow)]  # Initial guess state
     result = []
 
-    for state in trange(2**state_size_pow):
+    for state in trange(2**state_size_pow//2):
         guess_text = []
         lfsr = LFSR(tap, guess_state)
 
@@ -98,10 +98,10 @@ if __name__ == '__main__':
     cipher_flag, cipher_text = initialize()
 
     tap = [[0, 1, 2, 5], [0, 1, 2, 5], [0, 1, 2, 5]]
-    B_guess_state = guess_state(23, tap[1], cipher_text)    # 
+    # B_guess_state = guess_state(23, tap[1], cipher_text)    # [1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1]
     C_guess_state = guess_state(27, tap[2], cipher_text)  # 
     A_guess_state = final_guess(19, tap, cipher_text, B_guess_state[0], C_guess_state[0]) # 
-    # B_guess_state = [1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0]
+    # B_guess_state = [1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1]
     # C_guess_state = [0, 1, 1, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0]
     # A_guess_state = [1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0]
 
