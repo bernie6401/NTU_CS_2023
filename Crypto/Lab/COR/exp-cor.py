@@ -8,7 +8,7 @@ def initialize():
     cipher_text = []
     cipher_flag = []
     for i in range(len(f)):
-        if i > 200:
+        if i > 199:
             cipher_flag.append(int(f[i]))
         else:
             cipher_text.append(int(f[i]))
@@ -49,7 +49,7 @@ def guess_state(state_size_pow, tap, cipher_text):
     guess_state = [0 for _ in range(state_size_pow)]  # Initial guess state
     result = []
 
-    for state in trange(2**state_size_pow//2):
+    for state in trange(2**state_size_pow):
         guess_text = []
         lfsr = LFSR(tap, guess_state)
 
@@ -73,7 +73,7 @@ def guess_state(state_size_pow, tap, cipher_text):
 def final_guess(state_size_pow, tap, cipher_text, b_guess_state, c_guess_state):
     guess_state = [0 for _ in range(state_size_pow)]  # Initial guess state
 
-    for state in trange(2**state_size_pow):
+    for state in trange(223926, 2**state_size_pow):
         guess_text = []
         lfsr1 = LFSR(tap[0], guess_state)
         lfsr2 = LFSR(tap[1], b_guess_state)
@@ -98,13 +98,9 @@ if __name__ == '__main__':
     cipher_flag, cipher_text = initialize()
 
     tap = [[0, 1, 2, 5], [0, 1, 2, 5], [0, 1, 2, 5]]
-    # B_guess_state = guess_state(23, tap[1], cipher_text)    # [1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1]
-    C_guess_state = guess_state(27, tap[2], cipher_text)  # 
-    A_guess_state = final_guess(19, tap, cipher_text, B_guess_state[0], C_guess_state[0]) # 
-    # B_guess_state = [1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1]
-    # C_guess_state = [0, 1, 1, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0]
-    # A_guess_state = [1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0]
-
+    B_guess_state = [1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1]#guess_state(23, tap[1], cipher_text)    # [1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1]
+    C_guess_state = [0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1]#guess_state(27, tap[2], cipher_text)  # [0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1]
+    A_guess_state = [0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 0]#final_guess(19, tap, cipher_text, B_guess_state, C_guess_state) # [0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 0]
 
     lfsr1 = LFSR(tap[0], A_guess_state)
     lfsr2 = LFSR(tap[1], B_guess_state)
@@ -114,11 +110,15 @@ if __name__ == '__main__':
     output = []
     plaintext_bin = ''
     plaintext_hex = ''
+    tmp = []
 
+    for _ in range(200):
+        tmp.append(cipher.getbit())
+    assert tmp == cipher_text
     for i, b in enumerate(cipher_flag):
         plaintext_bin += str(cipher.getbit() ^ b)
 
         if (i+1) % 8 == 0:
             plaintext_hex += hex(int(plaintext_bin, 2))[2:]
             plaintext_bin = ''
-    print(bytes.fromhex(plaintext_hex).decode())
+    print(bytes.fromhex(plaintext_hex).decode("cp437"))
