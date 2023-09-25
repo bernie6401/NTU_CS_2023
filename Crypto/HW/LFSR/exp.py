@@ -61,7 +61,7 @@ if __name__ == '__main__':
     arr_merge = True
     for i in trange(71*(len(cipher_text_xor_flag)+len(cipher_text))):   # 總共跑71 * (256 + 64) = 22720
         # _comp_matrix = _comp_matrix.dot(comp_matrix)     # 每一次就讓companion matrix做內積
-        _comp_matrix = special_dot(_comp_matrix, comp_matrix)
+        _comp_matrix = special_dot(comp_matrix, _comp_matrix)
         if i == 71 * start_count - init_state_size:
             if arr_merge:
                 real_comp_matrix = _comp_matrix[-1]
