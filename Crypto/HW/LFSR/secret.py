@@ -1,0 +1,1 @@
+FLAG = b"FLAG{test_123456789abcdefghijkl}"
