@@ -34,7 +34,7 @@ def get_flag(cipher_flag, output):
     return bytes.fromhex(plaintext_hex).decode("cp437")
 
 def special_dot(m1, m2):
-    mr = np.empty((m1.shape[0], m2.shape[1]), dtype = np.int64)
+    mr = np.empty((m1.shape[0], m2.shape[1]), dtype = int)
     for i in range(mr.shape[0]):
         for j in range(mr.shape[1]):
             mr[i, j] = reduce(lambda x, y: x ^ y, (m1[i, :] & m2[:, j]))
@@ -61,7 +61,7 @@ if __name__ == '__main__':
     arr_merge = True
     for i in trange(71*(len(cipher_text_xor_flag)+len(cipher_text))):   # 總共跑71 * (256 + 64) = 22720
         _comp_matrix = special_dot(comp_matrix, _comp_matrix)   # 因為是在mod 2底下處理，所以不是普通的dot運算，乘法對應到AND，加法對應到XOR
-        if i == 71 * start_count - init_state_size - 1:
+        if i == 71 * start_count - init_state_size:
             if arr_merge:
                 real_comp_matrix = _comp_matrix[-1]
                 arr_merge = False
