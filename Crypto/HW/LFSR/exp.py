@@ -20,17 +20,18 @@ def verification(taps, key, verify_state, cipher_flag):
         for __ in range(70):
             randomness.getbit()
         output.append(randomness.getbit())
-    if output[256:] == verify_state.reshape(1, len(verify_state)).tolist()[0]:
-        flag = ""
-        plaintext_hex = ''
-        for idx, i in enumerate(range(len(cipher_flag))):
-            flag += str(output[i] ^ cipher_flag[i])
-            if (idx+1) % 8 == 0:
-                plaintext_hex += hex(int(flag, 2))[2:]
-                flag = ""
-        return bytes.fromhex(plaintext_hex).decode("cp437")
-    else:
-        return False
+    
+    return output[256]
+
+def get_flag(cipher_flag, output):
+    flag = ""
+    plaintext_hex = ''
+    for idx, i in enumerate(range(len(cipher_flag))):
+        flag += str(output[i] ^ cipher_flag[i])
+        if (idx+1) % 8 == 0:
+            plaintext_hex += hex(int(flag, 2))[2:]
+            flag = ""
+    return bytes.fromhex(plaintext_hex).decode("cp437")
 
 def special_dot(m1, m2):
     mr = np.empty((m1.shape[0], m2.shape[1]), dtype = np.int64)
@@ -74,4 +75,12 @@ if __name__ == '__main__':
     tmp = inv_real_comp_matrix.dot(cipher_text)
     init_state = [1 if tmp[i] > 0 else 0 for i in range(len(tmp))]
 
-    verification(taps, init_state, cipher_text, cipher_text_xor_flag)
+    output = verification(taps, init_state, cipher_text, cipher_text_xor_flag)
+
+    fd = open('./Crypto/HW/LFSR/tmp_state.txt', 'w')
+    fd.write(f"real_comp_matrix = \n{real_comp_matrix}\n\ninv_real_comp_matrix = \n{inv_real_comp_matrix}\n\ntmp = \n{tmp}\n\ninit_state = \n{init_state}\n\noutput[256:] = \n{output}\n\nverify_state = \n{cipher_text.reshape(1, len(cipher_text)).tolist()[0]}")
+    fd.close()
+
+    assert output == cipher_text.reshape(1, len(cipher_text)).tolist()[0]
+
+    get_flag(cipher_text_xor_flag, output)
