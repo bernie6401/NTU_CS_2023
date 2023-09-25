@@ -13,7 +13,7 @@ class LFSR:
         self._state = self._state[1:] + [f]
         return x
     
-def verification(taps, key, verify_state, cipher_flag):
+def verification(taps, key):
     randomness = LFSR(taps, key)
     output = []
     for _ in range(256 + 64):
@@ -21,7 +21,7 @@ def verification(taps, key, verify_state, cipher_flag):
             randomness.getbit()
         output.append(randomness.getbit())
     
-    return output[256]
+    return output[:256], output[256:]
 
 def get_flag(cipher_flag, output):
     flag = ""
@@ -75,12 +75,12 @@ if __name__ == '__main__':
     tmp = inv_real_comp_matrix.dot(cipher_text)
     init_state = [1 if tmp[i] > 0 else 0 for i in range(len(tmp))]
 
-    output = verification(taps, init_state, cipher_text, cipher_text_xor_flag)
+    output, check = verification(taps, init_state)
 
     fd = open('./Crypto/HW/LFSR/tmp_state.txt', 'w')
-    fd.write(f"real_comp_matrix = \n{real_comp_matrix}\n\ninv_real_comp_matrix = \n{inv_real_comp_matrix}\n\ntmp = \n{tmp}\n\ninit_state = \n{init_state}\n\noutput[256:] = \n{output}\n\nverify_state = \n{cipher_text.reshape(1, len(cipher_text)).tolist()[0]}")
+    fd.write(f"real_comp_matrix = \n{real_comp_matrix}\n\ninv_real_comp_matrix = \n{inv_real_comp_matrix}\n\ntmp = \n{tmp}\n\ninit_state = \n{init_state}\n\noutput[256:] = \n{check}\n\nverify_state = \n{cipher_text.reshape(1, len(cipher_text)).tolist()[0]}")
     fd.close()
 
-    assert output == cipher_text.reshape(1, len(cipher_text)).tolist()[0]
+    assert check == cipher_text.reshape(1, len(cipher_text)).tolist()[0]
 
     get_flag(cipher_text_xor_flag, output)
