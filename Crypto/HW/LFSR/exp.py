@@ -40,6 +40,38 @@ def special_dot(m1, m2):
             mr[i, j] = reduce(lambda x, y: x ^ y, (m1[i, :] & m2[:, j]))
     return mr
 
+def modMatInv(A,p):       # Finds the inverse of matrix A mod p
+  n=len(A)
+  A=np.matrix(A)
+  adj=np.zeros(shape=(n,n))
+  for i in range(0,n):
+    for j in range(0,n):
+      adj[i][j]=((-1)**(i+j)*int(round(np.linalg.det(minor(A,j,i)))))%p
+  return (modInv(int(round(np.linalg.det(A))),p)*adj)%p
+
+def modInv(a,p):          # Finds the inverse of a mod p, if it exists
+  for i in range(1,p):
+    if (i*a)%p==1:
+      return i
+  raise ValueError(str(a)+" has no inverse mod "+str(p))
+
+def minor(A,i,j):    # Return matrix A with the ith row and jth column deleted
+  A=np.array(A)
+  minor=np.zeros(shape=(len(A)-1,len(A)-1))
+  p=0
+  for s in range(0,len(minor)):
+    if p==i:
+      p=p+1
+    q=0
+    for t in range(0,len(minor)):
+      if q==j:
+        q=q+1
+      minor[s][t]=A[p][q]
+      q=q+1
+    p=p+1
+  return minor
+
+
 if __name__ == '__main__':
     f = [0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0]
     # f = [0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0, 1]
@@ -57,28 +89,22 @@ if __name__ == '__main__':
 
     # 做內積的運算
     _comp_matrix = comp_matrix  # _comp_matrix代表會變動的companion matrix
-    start_count = 257
+    tmp_comp_matrix = c
+    real_comp_matrix = c
+    count = 256
     arr_merge = True
-    for i in trange(71*(len(cipher_text_xor_flag)+len(cipher_text))):   # 總共跑71 * (256 + 64) = 22720
+    for i in trange(71*319+6+1):   # 總共跑71 * (256 + 64) = 22720
         _comp_matrix = special_dot(comp_matrix, _comp_matrix)   # 因為是在mod 2底下處理，所以不是普通的dot運算，乘法對應到AND，加法對應到XOR
-        if i == 71 * start_count - init_state_size:
-            if arr_merge:
-                real_comp_matrix = _comp_matrix[-1]
-                arr_merge = False
-            else:
-                real_comp_matrix = np.vstack([real_comp_matrix, _comp_matrix[-1]])
-            start_count += 1
-    
-    inv_real_comp_matrix = np.linalg.inv(real_comp_matrix)
-    tmp = inv_real_comp_matrix.dot(cipher_text)
-    init_state = [1 if tmp[i] > 0 else 0 for i in range(len(tmp))]
+        if i == 71 * count + 6:
+            real_comp_matrix = np.vstack([real_comp_matrix, _comp_matrix[-1]])
+            count += 1
+        tmp_comp_matrix = np.vstack([tmp_comp_matrix, _comp_matrix[-1]])
 
+    np.save('./test_numpy', tmp_comp_matrix)
+
+    inv_real_comp_matrix = modMatInv(real_comp_matrix[1:], 2)
+    assert special_dot(np.array(inv_real_comp_matrix, dtype=int), np.array(real_comp_matrix, dtype=int)) == np.eye(init_state_size, dtype = 'int')
+    init_state = special_dot(inv_real_comp_matrix, cipher_text)
     output, check = verification(taps, init_state)
-
-    fd = open('./Crypto/HW/LFSR/tmp_state.txt', 'w')
-    fd.write(f"real_comp_matrix = \n{real_comp_matrix}\n\ninv_real_comp_matrix = \n{inv_real_comp_matrix}\n\ntmp = \n{tmp}\n\ninit_state = \n{init_state}\n\noutput[256:] = \n{check}\n\nverify_state = \n{cipher_text.reshape(1, len(cipher_text)).tolist()[0]}")
-    fd.close()
-
     assert check == cipher_text.reshape(1, len(cipher_text)).tolist()[0]
-
     get_flag(cipher_text_xor_flag, output)
