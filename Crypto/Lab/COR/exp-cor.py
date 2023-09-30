@@ -12,7 +12,6 @@ def initialize():
             cipher_flag.append(int(f[i]))
         else:
             cipher_text.append(int(f[i]))
-    # print(cipher_flag, cipher_text)
     return cipher_flag, cipher_text
 
 def cal_correlation(a, b):
@@ -98,9 +97,14 @@ if __name__ == '__main__':
     cipher_flag, cipher_text = initialize()
 
     tap = [[0, 1, 2, 5], [0, 1, 2, 5], [0, 1, 2, 5]]
-    B_guess_state = [1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1]#guess_state(23, tap[1], cipher_text)    # [1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1]
-    C_guess_state = [0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1]#guess_state(27, tap[2], cipher_text)  # [0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1]
-    A_guess_state = [0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 0]#final_guess(19, tap, cipher_text, B_guess_state, C_guess_state) # [0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 0]
+
+    # B_guess_state = guess_state(23, tap[1], cipher_text)    # [1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1]
+    # C_guess_state = guess_state(27, tap[2], cipher_text)  # [0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1]
+    # A_guess_state = final_guess(19, tap, cipher_text, B_guess_state, C_guess_state) # [0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 0]
+
+    B_guess_state = [1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1]
+    C_guess_state = [0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1]
+    A_guess_state = [0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 0]
 
     lfsr1 = LFSR(tap[0], A_guess_state)
     lfsr2 = LFSR(tap[1], B_guess_state)

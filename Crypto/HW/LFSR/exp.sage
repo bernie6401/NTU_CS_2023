@@ -67,7 +67,7 @@ if __name__ == '__main__':
     init_state = list(init_state.numpy().reshape(1, init_state_size)[0])
     print("Initial State = ", init_state)
 
-    output, check = verification(taps, init_state)
+    output, check = verification(taps, [0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1])
 
     assert list(cipher_text.numpy().reshape(1, 64)[0]) == check
 
