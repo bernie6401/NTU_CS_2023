@@ -1,4 +1,4 @@
-from Crypto.Util.number import long_to_bytes
+from Crypto.Util.number import long_to_bytes, inverse
 from Crypto.Cipher import AES
 from secret import p, q
 
@@ -24,11 +24,11 @@ def unpad(c):
 
 ## Alice: Okay! AES with CBC mode. I know it.
 if __name__ == "__main__":
+    alarm(300)
     N = p * q
     e = 65537
     d = pow(e, -1, (p-1)*(q-1))
     while True:
-        alarm(100)
         try:
             encrypted_key = int( input("Give me the encrypted key: ") )
             encrypted_iv = int( input("Give me the encrypted iv: ") )
@@ -39,9 +39,10 @@ if __name__ == "__main__":
             iv = long_to_bytes(pow(encrypted_iv, d, N))[-16:]
             
             # decrypt symmetric_encryption()
-            cipher = AES.new(aes_key, AES.MODE_CBC, iv) 
-            pt = unpad(cipher.decrypt(ct))
-            print("OK! Got it.")
+            cipher = AES.new(aes_key, AES.MODE_CBC, iv)
+            tmp = cipher.decrypt(ct)
+            pt = unpad(tmp)
+            print(f"OK! Got it. Your pt = {tmp} & after unpad = {pt}")
 
         except ValueError:
             print("I do not understand.")
