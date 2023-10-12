@@ -1,4 +1,5 @@
-from elliptic_curve import Curve, Point
+from sage.all import *
+from elliptic_curve_97cadb52fbd7b2cd import Curve, Point
 from Crypto.Util.number import bytes_to_long
 from secret import FLAG
 
