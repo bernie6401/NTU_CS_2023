@@ -9,17 +9,18 @@ a = 0xffffffff00000001000000000000000000000000fffffffffffffffffffffffc
 def solveDL():
     b = randint(1, p)
     E = EllipticCurve(Zmod(p), [a, b])
+    G = E.gen(0)
     order = E.order()
-    print(order)
+    # print(order)
     factors = prime_factors(order)
-    print(factors)
+    # print(factors)
     valid = []
     for factor in factors:
         if factor <= 2**40:
             valid.append(factor)
     prime = valid[-1]
-    G = E.gen(0) * int(order / prime)
-    tmp_point = G.xy()
+    new_G = G * int(order / prime)
+    tmp_point = new_G.xy()
     tmp_x, tmp_y = str(tmp_point[0]), str(tmp_point[1])
 
     try:
@@ -35,11 +36,11 @@ def solveDL():
         print(e)
         return None, None
 
-    print(f'Position (ct_x, ct_y) = ({ct_x}, {ct_y})')
-    K = E(int(ct_x), int(ct_y))
-    log = G.discrete_log(K)
-    print(f"DL found: {log}")
-    return (log, prime)
+    # print(f'Position (ct_x, ct_y) = ({ct_x}, {ct_y})')
+    new_hint = E(int(ct_x), int(ct_y))
+    aprt_of_flag = discrete_log(new_hint, new_G, operation='+')
+    print(f"Flag' found: {aprt_of_flag}")
+    return (aprt_of_flag, prime)
     
 def getDLs():
     dlogs = []
