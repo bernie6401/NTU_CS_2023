@@ -8,6 +8,7 @@ p = remote('edu-ctf.zoolab.org',10004)
 # p = process(['python', './POA_4af88990ab364609.py'])
 
 ct = p.readline()[:-1].decode()
+print(ct)
 ct = bytes.fromhex(ct)
 iv, ct1, ct2 = ct[:16], ct[16:32], ct[32:48]
 flag = bytearray(32) 
