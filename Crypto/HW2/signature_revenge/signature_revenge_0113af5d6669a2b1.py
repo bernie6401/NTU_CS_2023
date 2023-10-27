@@ -6,7 +6,7 @@ from secret import FLAG
 import os
 E = SECP256k1
 G, n = E.generator, E.order
-d = bytes_to_long( b'\x11' * (32 - len(FLAG)) + FLAG )#os.urandom(32 - len(FLAG))
+d = bytes_to_long( os.urandom(32 - len(FLAG)) + FLAG )
 pubkey = Public_key(G, d*G)
 prikey = Private_key(pubkey, d)
 
@@ -16,12 +16,8 @@ magic2 = md5(d.to_bytes(32, "big")[::-1]).digest()
 h1 = sha256(b"https://www.youtube.com/watch?v=IBnrn2pnPG8").digest()
 h2 = sha256(b"https://www.youtube.com/watch?v=1H2cyhWYXrE").digest()
 
-k1 = bytes_to_long(magic1 + magic2)#
-k2 = bytes_to_long(magic2 + magic1)#
-print(magic1)
-print(magic2)
-print(k1)
-print(k2)
+k1 = bytes_to_long(magic1 + magic2)
+k2 = bytes_to_long(magic2 + magic1)
 
 sig1 = prikey.sign(bytes_to_long(h1), k1)
 sig2 = prikey.sign(bytes_to_long(h2), k2)
