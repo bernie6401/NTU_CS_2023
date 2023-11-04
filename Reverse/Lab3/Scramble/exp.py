@@ -14,7 +14,7 @@ bvs = [BitVec(f'bt_{i}', 32) for i in range(flag_len)]
 for bv in bvs:
     s.add(And(bv >= 0x20, bv <= 0x7f))
 
-
+# 每一個符號(就是flag字元)，經過我們已知的scramble pattern之後應該要是最後的target
 for i, patter in enumerate(patters):
     formula = f'bvs[{i}]'
 
