@@ -5,7 +5,7 @@ context.arch = 'amd64'
 libc = ELF('/lib/x86_64-linux-gnu/libc.so.6')
 
 cmd_dic = {1:'Login', 2:'Register', 3:'New Note', 4:'Edit Note', 5:'Show Note'}
-def dealing_cmd(r, cmd, note_name=b'test', content=b'test\n', offset=b'0', random='0'):
+def dealing_cmd(r, cmd, note_name=b'test', content_len=b'5', content=b'test\n', offset=b'0', random='0'):
     r.recvlines(7)
     if cmd == 1 or cmd == 2:
         r.sendline(str(cmd).encode())
