@@ -1,6 +1,6 @@
-:::spoiler 比賽成果
+# DeadFace CTF 2023
 ![](https://hackmd.io/_uploads/BkhuIH1QT.png)
-:::
+
 ## Steganography
 ### You've Been Ransomwared 
 #### Description
@@ -377,7 +377,7 @@ Flag: `flag{Wh1t3_N01Z3.exe}`
     從結果可以知道有一個localhost使用udp protocol的連線正在執行，所以我們可以直接用nc戳9023 port，直接用-u(udp mode)傳送資料過去
     ```bash
     vim@1329c5769906:~$ nc -u 0.0.0.0 9023
-
+    
     flag{Hunt_4_UDP_s3rv3r}
     ```
 

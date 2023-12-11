@@ -1,7 +1,6 @@
 # BalsnCTF 2023 Write Up
-
+[Link](https://balsnctf.com/)
 隊伍名稱: `tmp`
-
 最終名次: 53(我記得應該是)
 
 # Web3

