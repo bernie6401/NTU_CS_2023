@@ -2,8 +2,11 @@ FROM python:3.11
 
 
 RUN apt update && \
-    apt install -y --no-install-recommends chromium-driver redis-server
+    apt install -y --no-install-recommends
 
+RUN apt install -y chromium-driver
+
+RUN apt install redis-server
 
 RUN apt update && \
     apt install -y --no-install-recommends chromium
