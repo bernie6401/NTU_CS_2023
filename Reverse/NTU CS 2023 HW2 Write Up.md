@@ -1,158 +1,159 @@
+# NTU CS 2023 HW2 Write Up
 Name: 何秉學    Student ID: R11921A16
-    TOC
+:::spoiler TOC
 [TOC]
-
+:::
 ## Lab-HelloRevWorld
 Flag: `FLAG{h311O_revers1ng_3ngineer5}`
 ### 解題流程與思路
 這一題主要是練習如何把如何把bytes變成字串:
 1. 可以先把bytes的型別定義好(單獨的bytes變成array)，變成array有兩種方法，第一種是直接用`Y`定義他的型別成`int dword_2008[32]`，前面的int就看每一個字元是來決定，後面`[32]`就代表有多少字元變成array；第二種方法就是直接按`d`改變一個字元的型態變成int，然後在`edit/Array`的地方可以叫出`Convert to array`的視窗(如果前面沒有先用`d`改變型態的話，他會以為所有字元都是一個byte，然後總共有128個字元這樣換算，但其實我們是總共32個字元，每一個字元是4個bytes，也就是int，這一點要特別注意)
-    ![](D:\NTU\Second Year\Computer Security\Reverse\upload_2ffb15e32a288075a0d34a438a37f45a.png)
-    ![](D:\NTU\Second Year\Computer Security\Reverse\upload_b806f458d061ca6b3f33f486c6cc269f.png)
+![](https://hackmd.io/_uploads/HJ3yvI-Ga.png)
+![](https://hackmd.io/_uploads/r1A_8LWMa.png)
 2. 接著就是在`Option/String literals`視窗中設定用哪一個型態表示字串，這邊因為每一個字元都是4 bytes，也就是32 bits，所以選擇C-style
-	![](D:\NTU\Second Year\Computer Security\Reverse\upload_b4547936acaf96488fe92cad35e3561c.png)
-    完整流程
-
-    ```
-    .rodata:0000000000002008 unk_2008 db  46h ; F                    ; DATA XREF: main+8↑o
-    .rodata:0000000000002009 db    0
-    .rodata:000000000000200A db    0
-    .rodata:000000000000200B db    0
-    .rodata:000000000000200C db  4Ch ; L
-    .rodata:000000000000200D db    0
-    .rodata:000000000000200E db    0
-    .rodata:000000000000200F db    0
-    .rodata:0000000000002010 db  41h ; A
-    .rodata:0000000000002011 db    0
-    .rodata:0000000000002012 db    0
-    .rodata:0000000000002013 db    0
-    .rodata:0000000000002014 db  47h ; G
-    .rodata:0000000000002015 db    0
-    .rodata:0000000000002016 db    0
-    .rodata:0000000000002017 db    0
-    .rodata:0000000000002018 db  7Bh ; {
-    .rodata:0000000000002019 db    0
-    .rodata:000000000000201A db    0
-    .rodata:000000000000201B db    0
-    .rodata:000000000000201C db  68h ; h
-    .rodata:000000000000201D db    0
-    .rodata:000000000000201E db    0
-    .rodata:000000000000201F db    0
-    .rodata:0000000000002020 db  33h ; 3
-    .rodata:0000000000002021 db    0
-    .rodata:0000000000002022 db    0
-    .rodata:0000000000002023 db    0
-    .rodata:0000000000002024 db  31h ; 1
-    .rodata:0000000000002025 db    0
-    .rodata:0000000000002026 db    0
-    .rodata:0000000000002027 db    0
-    .rodata:0000000000002028 db  31h ; 1
-    .rodata:0000000000002029 db    0
-    .rodata:000000000000202A db    0
-    .rodata:000000000000202B db    0
-    .rodata:000000000000202C db  4Fh ; O
-    .rodata:000000000000202D db    0
-    .rodata:000000000000202E db    0
-    .rodata:000000000000202F db    0
-    .rodata:0000000000002030 db  5Fh ; _
-    .rodata:0000000000002031 db    0
-    .rodata:0000000000002032 db    0
-    .rodata:0000000000002033 db    0
-    .rodata:0000000000002034 db  72h ; r
-    .rodata:0000000000002035 db    0
-    .rodata:0000000000002036 db    0
-    .rodata:0000000000002037 db    0
-    .rodata:0000000000002038 db  65h ; e
-    .rodata:0000000000002039 db    0
-    .rodata:000000000000203A db    0
-    .rodata:000000000000203B db    0
-    .rodata:000000000000203C db  76h ; v
-    .rodata:000000000000203D db    0
-    .rodata:000000000000203E db    0
-    .rodata:000000000000203F db    0
-    .rodata:0000000000002040 db  65h ; e
-    .rodata:0000000000002041 db    0
-    .rodata:0000000000002042 db    0
-    .rodata:0000000000002043 db    0
-    .rodata:0000000000002044 db  72h ; r
-    .rodata:0000000000002045 db    0
-    .rodata:0000000000002046 db    0
-    .rodata:0000000000002047 db    0
-    .rodata:0000000000002048 db  73h ; s
-    .rodata:0000000000002049 db    0
-    .rodata:000000000000204A db    0
-    .rodata:000000000000204B db    0
-    .rodata:000000000000204C db  31h ; 1
-    .rodata:000000000000204D db    0
-    .rodata:000000000000204E db    0
-    .rodata:000000000000204F db    0
-    .rodata:0000000000002050 db  6Eh ; n
-    .rodata:0000000000002051 db    0
-    .rodata:0000000000002052 db    0
-    .rodata:0000000000002053 db    0
-    .rodata:0000000000002054 db  67h ; g
-    .rodata:0000000000002055 db    0
-    .rodata:0000000000002056 db    0
-    .rodata:0000000000002057 db    0
-    .rodata:0000000000002058 db  5Fh ; _
-    .rodata:0000000000002059 db    0
-    .rodata:000000000000205A db    0
-    .rodata:000000000000205B db    0
-    .rodata:000000000000205C db  33h ; 3
-    .rodata:000000000000205D db    0
-    .rodata:000000000000205E db    0
-    .rodata:000000000000205F db    0
-    .rodata:0000000000002060 db  6Eh ; n
-    .rodata:0000000000002061 db    0
-    .rodata:0000000000002062 db    0
-    .rodata:0000000000002063 db    0
-    .rodata:0000000000002064 db  67h ; g
-    .rodata:0000000000002065 db    0
-    .rodata:0000000000002066 db    0
-    .rodata:0000000000002067 db    0
-    .rodata:0000000000002068 db  69h ; i
-    .rodata:0000000000002069 db    0
-    .rodata:000000000000206A db    0
-    .rodata:000000000000206B db    0
-    .rodata:000000000000206C db  6Eh ; n
-    .rodata:000000000000206D db    0
-    .rodata:000000000000206E db    0
-    .rodata:000000000000206F db    0
-    .rodata:0000000000002070 db  65h ; e
-    .rodata:0000000000002071 db    0
-    .rodata:0000000000002072 db    0
-    .rodata:0000000000002073 db    0
-    .rodata:0000000000002074 db  65h ; e
-    .rodata:0000000000002075 db    0
-    .rodata:0000000000002076 db    0
-    .rodata:0000000000002077 db    0
-    .rodata:0000000000002078 db  72h ; r
-    .rodata:0000000000002079 db    0
-    .rodata:000000000000207A db    0
-    .rodata:000000000000207B db    0
-    .rodata:000000000000207C db  35h ; 5
-    .rodata:000000000000207D db    0
-    .rodata:000000000000207E db    0
-    .rodata:000000000000207F db    0
-    .rodata:0000000000002080 db  7Dh ; }
-    .rodata:0000000000002081 db    0
-    .rodata:0000000000002082 db    0
-    .rodata:0000000000002083 db    0
-    .rodata:0000000000002084 db    0
-    .rodata:0000000000002085 db    0
-    .rodata:0000000000002086 db    0
-    .rodata:0000000000002087 db    0
-    ```
-    $\downarrow$
-    ```
-    .rodata:0000000000002008 dword_2008 dd 46h, 4Ch, 41h, 47h, 7Bh, 68h, 33h, 2 dup(31h), 4Fh, 5Fh, 72h, 65h, 76h, 65h, 72h, 73h, 31h, 6Eh, 67h
-    .rodata:0000000000002008                                         ; DATA XREF: main+8↑o
-    .rodata:0000000000002008 dd 5Fh, 33h, 6Eh, 67h, 69h, 6Eh, 2 dup(65h), 72h, 35h, 7Dh, 0
-    ```
-    $\downarrow$
-    ```
-    .rodata:0000000000002008 text "UTF-32LE", 'FLAG{h311O_revers1ng_3ngineer5}',0
-    ```
+![](https://hackmd.io/_uploads/SyQBP8Zfp.png)
+:::spoiler 完整流程
+```
+.rodata:0000000000002008 unk_2008 db  46h ; F                    ; DATA XREF: main+8↑o
+.rodata:0000000000002009 db    0
+.rodata:000000000000200A db    0
+.rodata:000000000000200B db    0
+.rodata:000000000000200C db  4Ch ; L
+.rodata:000000000000200D db    0
+.rodata:000000000000200E db    0
+.rodata:000000000000200F db    0
+.rodata:0000000000002010 db  41h ; A
+.rodata:0000000000002011 db    0
+.rodata:0000000000002012 db    0
+.rodata:0000000000002013 db    0
+.rodata:0000000000002014 db  47h ; G
+.rodata:0000000000002015 db    0
+.rodata:0000000000002016 db    0
+.rodata:0000000000002017 db    0
+.rodata:0000000000002018 db  7Bh ; {
+.rodata:0000000000002019 db    0
+.rodata:000000000000201A db    0
+.rodata:000000000000201B db    0
+.rodata:000000000000201C db  68h ; h
+.rodata:000000000000201D db    0
+.rodata:000000000000201E db    0
+.rodata:000000000000201F db    0
+.rodata:0000000000002020 db  33h ; 3
+.rodata:0000000000002021 db    0
+.rodata:0000000000002022 db    0
+.rodata:0000000000002023 db    0
+.rodata:0000000000002024 db  31h ; 1
+.rodata:0000000000002025 db    0
+.rodata:0000000000002026 db    0
+.rodata:0000000000002027 db    0
+.rodata:0000000000002028 db  31h ; 1
+.rodata:0000000000002029 db    0
+.rodata:000000000000202A db    0
+.rodata:000000000000202B db    0
+.rodata:000000000000202C db  4Fh ; O
+.rodata:000000000000202D db    0
+.rodata:000000000000202E db    0
+.rodata:000000000000202F db    0
+.rodata:0000000000002030 db  5Fh ; _
+.rodata:0000000000002031 db    0
+.rodata:0000000000002032 db    0
+.rodata:0000000000002033 db    0
+.rodata:0000000000002034 db  72h ; r
+.rodata:0000000000002035 db    0
+.rodata:0000000000002036 db    0
+.rodata:0000000000002037 db    0
+.rodata:0000000000002038 db  65h ; e
+.rodata:0000000000002039 db    0
+.rodata:000000000000203A db    0
+.rodata:000000000000203B db    0
+.rodata:000000000000203C db  76h ; v
+.rodata:000000000000203D db    0
+.rodata:000000000000203E db    0
+.rodata:000000000000203F db    0
+.rodata:0000000000002040 db  65h ; e
+.rodata:0000000000002041 db    0
+.rodata:0000000000002042 db    0
+.rodata:0000000000002043 db    0
+.rodata:0000000000002044 db  72h ; r
+.rodata:0000000000002045 db    0
+.rodata:0000000000002046 db    0
+.rodata:0000000000002047 db    0
+.rodata:0000000000002048 db  73h ; s
+.rodata:0000000000002049 db    0
+.rodata:000000000000204A db    0
+.rodata:000000000000204B db    0
+.rodata:000000000000204C db  31h ; 1
+.rodata:000000000000204D db    0
+.rodata:000000000000204E db    0
+.rodata:000000000000204F db    0
+.rodata:0000000000002050 db  6Eh ; n
+.rodata:0000000000002051 db    0
+.rodata:0000000000002052 db    0
+.rodata:0000000000002053 db    0
+.rodata:0000000000002054 db  67h ; g
+.rodata:0000000000002055 db    0
+.rodata:0000000000002056 db    0
+.rodata:0000000000002057 db    0
+.rodata:0000000000002058 db  5Fh ; _
+.rodata:0000000000002059 db    0
+.rodata:000000000000205A db    0
+.rodata:000000000000205B db    0
+.rodata:000000000000205C db  33h ; 3
+.rodata:000000000000205D db    0
+.rodata:000000000000205E db    0
+.rodata:000000000000205F db    0
+.rodata:0000000000002060 db  6Eh ; n
+.rodata:0000000000002061 db    0
+.rodata:0000000000002062 db    0
+.rodata:0000000000002063 db    0
+.rodata:0000000000002064 db  67h ; g
+.rodata:0000000000002065 db    0
+.rodata:0000000000002066 db    0
+.rodata:0000000000002067 db    0
+.rodata:0000000000002068 db  69h ; i
+.rodata:0000000000002069 db    0
+.rodata:000000000000206A db    0
+.rodata:000000000000206B db    0
+.rodata:000000000000206C db  6Eh ; n
+.rodata:000000000000206D db    0
+.rodata:000000000000206E db    0
+.rodata:000000000000206F db    0
+.rodata:0000000000002070 db  65h ; e
+.rodata:0000000000002071 db    0
+.rodata:0000000000002072 db    0
+.rodata:0000000000002073 db    0
+.rodata:0000000000002074 db  65h ; e
+.rodata:0000000000002075 db    0
+.rodata:0000000000002076 db    0
+.rodata:0000000000002077 db    0
+.rodata:0000000000002078 db  72h ; r
+.rodata:0000000000002079 db    0
+.rodata:000000000000207A db    0
+.rodata:000000000000207B db    0
+.rodata:000000000000207C db  35h ; 5
+.rodata:000000000000207D db    0
+.rodata:000000000000207E db    0
+.rodata:000000000000207F db    0
+.rodata:0000000000002080 db  7Dh ; }
+.rodata:0000000000002081 db    0
+.rodata:0000000000002082 db    0
+.rodata:0000000000002083 db    0
+.rodata:0000000000002084 db    0
+.rodata:0000000000002085 db    0
+.rodata:0000000000002086 db    0
+.rodata:0000000000002087 db    0
+```
+$\downarrow$
+```
+.rodata:0000000000002008 dword_2008 dd 46h, 4Ch, 41h, 47h, 7Bh, 68h, 33h, 2 dup(31h), 4Fh, 5Fh, 72h, 65h, 76h, 65h, 72h, 73h, 31h, 6Eh, 67h
+.rodata:0000000000002008                                         ; DATA XREF: main+8↑o
+.rodata:0000000000002008 dd 5Fh, 33h, 6Eh, 67h, 69h, 6Eh, 2 dup(65h), 72h, 35h, 7Dh, 0
+```
+$\downarrow$
+```
+.rodata:0000000000002008 text "UTF-32LE", 'FLAG{h311O_revers1ng_3ngineer5}',0
+```
+:::
 ## Lab-AssemblyDev
 Flag: `FLAG{c0d1Ng_1n_a5s3mB1y_i5_sO_fun!}`
 ### 解題流程與思路
@@ -160,18 +161,13 @@ Flag: `FLAG{c0d1Ng_1n_a5s3mB1y_i5_sO_fun!}`
 * 題目一: 就是一般的運算(\+\-*/)
 * 題目二: 這邊是考register和stack之間的搬運和運算
 * 題目三: 需要考慮condition，然後看要跳轉到哪邊，重點是jump有分signed和unsigned，而仔細看source code他只有考慮unsinged，所以我們要特別挑選[jump的類別](https://redirect.cs.umbc.edu/courses/undergraduate/CMSC313/spring04/burt_katz/lectures/Lect05/unsignedCondJumps.html)
-### Exploit
-```bash
-$ (cat arithmatic.asm | base64 -w0 ; echo '' ; cat data_movement.asm | base64 -w0 ; echo '' ; cat condition.asm | base64 -w0 ; echo '') > answer.txt
-$ cat answer.txt | nc edu-ctf.zoolab.org 10020
-```
 ## HW-crackme_vectorization
 Flag: `FLAG{yOu_kn0w_hOw_to_r3v3r53_4_m47riX!}`
 ### 解題流程與思路
 一陣基本操作處理完比較好看的狀態後，首先發現一開始先輸入字串的長度(應該是49)，然後我們要輸入一些東西(就是按照前面輸入，總共也是49次)，接著就會進到很醜沒辦法解析的function(我暫時不理他)，一開始我在猜應該是做encryption之類的事情，接著就比對mem，一樣就噴correct這樣，我認為超級醜的function應該不是這次出題的重點，因為要全部逆完真的很有難度，對於學習也沒必要，此時我開始用動態+通靈的方式猜他在幹嘛，依照題目的標題和後面對比字串長度必須要等於`7`這兩個東西判斷，他應該是在做矩陣之類的操作，而那個醜不拉基的function應該是類似乘法或是加法之類的功能，有了想法就可以實驗他的操作
 如果輸入長度49
 1. 內容都是零，毫不意外經過醜不拉基function後都會是零
-    Result
+    :::spoiler Result
     ```
     0x000055aa2b46b4b0│+0x0000: 0x0000000000000000   ← $rdi
     0x000055aa2b46b4b8│+0x0008: 0x0000000000000000
@@ -199,9 +195,9 @@ Flag: `FLAG{yOu_kn0w_hOw_to_r3v3r53_4_m47riX!}`
     0x000055aa2b46b568│+0x00b8: 0x0000000000000000
     0x000055aa2b46b570│+0x00c0: 0x0000000000000000
     ```
-    
+    :::
 2. 內容都是一，經過醜不拉基function後都會每七個都是同一個數字
-    Result
+    :::spoiler Result
     ```
     0x000055d2f80754b0│+0x0000: 0x000003d4000003d4   ← $rdi
     0x000055d2f80754b8│+0x0008: 0x000003d4000003d4
@@ -229,9 +225,9 @@ Flag: `FLAG{yOu_kn0w_hOw_to_r3v3r53_4_m47riX!}`
     0x000055d2f8075568│+0x00b8: 0x0000031e0000031e
     0x000055d2f8075570│+0x00c0: 0x000000000000031e
     ```
-    
+    :::
 3. 內容都是二，和上面對比全部都會是兩倍
-    Result
+    :::spoiler Result
     ```
     0x0000563c09e664b0│+0x0000: 0x000007a8000007a8   ← $rdi
     0x0000563c09e664b8│+0x0008: 0x000007a8000007a8
@@ -259,9 +255,9 @@ Flag: `FLAG{yOu_kn0w_hOw_to_r3v3r53_4_m47riX!}`
     0x0000563c09e66568│+0x00b8: 0x0000063c0000063c
     0x0000563c09e66570│+0x00c0: 0x000000000000063c
     ```
-    
+    :::
 4. 只有第一個element是1，其他都是零，由結果可知只有七個一數的第一個element會有值，且該值是已經從儲存在原本的執行檔中，比對之後發現一模一樣
-    Result
+    :::spoiler Result
     ```
     0x0000563dd53444b0│+0x0000: 0x000000000000003c ("<"?)    ← $rdi
     0x0000563dd53444b8│+0x0008: 0x0000000000000000
@@ -289,18 +285,9 @@ Flag: `FLAG{yOu_kn0w_hOw_to_r3v3r53_4_m47riX!}`
     0x0000563dd5344568│+0x00b8: 0x0000000000000000
     0x0000563dd5344570│+0x00c0: 0x0000000000000000
     ```
+    :::
     
-    
-
 由以上實驗可以大致確認醜不拉基function做的事情就是矩陣乘法，而我們知道他比較的乘法結果，也知道和我們輸入的矩陣相乘的乘數，換言之可以反推回我們應該輸入的東西為何
-### Exploit
-```bash
-$ python exp.py
-[+] Starting local process './simple-crackme_f5e33c76600e': pid 5278
-[102, 103, 112, 53, 70, 100, 72, 88, 47, 55, 122, 50, 69, 49, 66, 67, 74, 120, 118, 80, 68, 53, 99, 114, 102, 101, 100, 105, 57, 49, 89, 52, 68, 107, 71, 97, 83, 79, 68, 48, 113, 85, 79, 48, 86, 53, 48, 61]
-[*] Stopped process './simple-crackme_f5e33c76600e' (pid 5278)
-Password = fgp5FdHX/7z2E1BCJxvPD5crfedi91Y4DkGaSOD0qUO0V50=
-```
 ## HW-Banana Donut Verifier
 Flag: `FLAG{d0_Y0u_l1k3_b4n4Na_d0Nut?}`
 ### 解題流程與思路
@@ -329,13 +316,7 @@ Flag: `FLAG{d0_Y0u_l1k3_b4n4Na_d0Nut?}`
     ...
     ```
     
-
 從以上的memory dump出來的結果就知道全部輸入\x00和要比對的key只有前面48 bytes不一樣，但後面都一樣，而和全部都是\x10的輸出結果比較發現都是差\x10(不管正負)，因此我有大膽的想法，這該不會是XOR的操作ㄅ，經過比對果然無誤，所以我只要把要比對的key和全部都是\x00的結果進行XOR就知道我應該輸入甚麼了
-### Exploit
-```bash
-$ python exp.py
-Exchange Flag is: zls4wq/r/wzzU5gE1yAxN5crfedi91Y4DkGaSOD0qUO0V50=
-```
 ## Lab-Clipboard Stealer 1 -- sub_140001C80
 Flag: `FLAG{T1547.001}`
 ### 解題流程與思路
@@ -372,8 +353,8 @@ Flag: `FLAG{th15_I4_4_mut3x_k1LL_SwitcH}`
 這一題有個小地方要注意，雖然觀察過source code是非常簡單的建立mutex的操作，題目想要知道的mutex name也非常簡單，只是個xor就知道的東西，不過在實作上需要注意endian的問題，一開始我是直接按照`0x64, 0x63, 0x62, 0x7A`的順序，但結果輸出一些ascii的字元，其實他是從後面讀進來再開始操作xor
 
 * Malware使用Mutex的用途
-* 與一般程式相同，用於跨 process / thread 間的 synchronization
-* 避免重複感染、勒索 (LockBit 3.0、RedLine Stealer)
+    * 與一般程式相同，用於跨 process / thread 間的 synchronization
+    * 避免重複感染、勒索 (LockBit 3.0、RedLine Stealer)
 ### Exploit
 ```python
 f = [0x0E, 0x0A, 0x52, 0x51, 0x25, 0x2B, 0x57, 0x3B, 0x4E, 0x3D, 0x0E, 0x11, 0x0E, 0x51, 0x1B, 0x3B, 0x11, 0x53, 0x2F, 0x28, 0x25, 0x31, 0x14, 0x0D, 0x0E, 0x01, 0x2B, 0x64]
@@ -390,10 +371,11 @@ print("Flag: FLAG{" + "".join(Name) + "}")
 Flag: `FLAG{462fe0007f86957f59824e113f78947c}`
 ### 解題流程與思路
 1. 進到`sub_140001BF0`之後可以先觀察`sub_140001870`，前面有source code可以看到他正在比對`byte_140005040`的前面兩個字元是不是等於`MZ`，也就是一支PE file的magic header，並且又比對了後面0x18的位置是不是等於0x20B，也就是另外一個magic header(用來判斷該程式是否可於64-bits運行)，由以上操作幾乎可以確定駭客把真正的程式(可能是惡意的)塞在正常的PE file中
-    info
+    :::info
     如果只是要解題的話，到這邊就可以了，只要利用前一題學到的把`byte_140005040`改變他的type，變成`char[72770]`，再用Shift+E，把raw data export出來，丟到[online md5 checksum](https://emn178.github.io/online-tools/md5_checksum.html)，就可以得到這支檔案的hash(`462fe0007f86957f59824e113f78947c`)
     ![](https://hackmd.io/_uploads/SJoeiepGT.png)
     ![](https://hackmd.io/_uploads/rk7SigpGp.png)
+    :::
 
 ## Lab-Clipboard Stealer 5 -- sub_140001C80
 Flag: `FLAG{C2_cU540m_Pr0t0C01}`
@@ -402,14 +384,14 @@ Flag: `FLAG{C2_cU540m_Pr0t0C01}`
     目標是取得c2 server的IP和port number
     1. 先看到#12的socket function，他代表的意思是利用IPv4並且TCP的protocol進行溝通，相關的數值說明都在[MSDN](https://learn.microsoft.com/zh-tw/windows/win32/api/winsock2/nf-winsock2-socket)，可以用前面教到的用m指令改變已知的constant名稱$\to$`v2 = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);`
     2. 接著看到connect function中的`&name`，IDA原本解析成sockaddr，sockaddr是一種通用的結構格式，所以IDA解析出來的東西也沒有問題，不過如果是IPv4又是乙太網路的傳輸，會比較建議把結構改成==sockaddr_in==，[這一篇](https://blog.csdn.net/tao546377318/article/details/72780685)探討了兩者的區別(其實就只是把sockaddr原本的結構擴展而已)，這樣的話整體分析會更好
-            解析後
+        :::spoiler 解析後
         ```cpp
         void __fastcall connect_to_c2(unsigned __int64 *a1)
         {
           unsigned __int64 v2; // rax
           struct sockaddr_in name; // [rsp+20h] [rbp-1B8h] BYREF
           struct WSAData WSAData; // [rsp+30h] [rbp-1A8h] BYREF
-        
+
           if ( !WSAStartup(0x202u, &WSAData) )
           {
             name.sin_addr.S_un.S_addr = 0xA0AA8C0;      // IP: 192.168.10.10
@@ -421,14 +403,13 @@ Flag: `FLAG{C2_cU540m_Pr0t0C01}`
           }
         }
         ```
-        
-    
-    info
+        :::
+    :::info
     IP: 0xA0AA8C0 $\to$ `192.168.10.10`(little endian轉十進位)
     Port: `11187`
     sin.family: IPv4
     Protocol: TCP
-    
+    :::
 2. `send_collected_data_to_c2`
     1. 先切分程式碼的功能
         ![](https://hackmd.io/_uploads/rkci81Aza.png)
@@ -439,11 +420,11 @@ Flag: `FLAG{C2_cU540m_Pr0t0C01}`
         * field_0看起來像是一個magic bytes，因為一開始附值之後，傳送過去server，再接收回來的packet也是有做驗證的動作，所以看起來是一個verification magic
         * field_8看起來就是接收來自server下達的command
         * field_C就比較多元，在case 1的時候是當作承接server給的encryption key(大小是8個bytes)，但在case 2是當作加密的cipher(大小是0x18個bytes)，所以我取名`enc_key_or_data`，另外大小是0x18(可以從memcpy的大小看出來)，所以可以按Y改變型別成`char[0x18]`
-        info
-        目前整體的流程
-        ![](https://hackmd.io/_uploads/HJJB7gCf6.png)
-        ![](https://hackmd.io/_uploads/BkHSXeCM6.png)
-    
+    :::info
+    目前整體的流程
+    ![](https://hackmd.io/_uploads/HJJB7gCf6.png)
+    ![](https://hackmd.io/_uploads/BkHSXeCM6.png)
+    :::
     
     ---
     4. 分析pcap
@@ -470,17 +451,6 @@ hash = 0;
 do
     hash += __ROL4__(hash, 11) + 1187 + *api_name++;// do self-defined hash function
 while ( *api_name );
-```
-### Exploit
-```bash
-$ python exp-lab-6.py
-[+] kernel32 Function    - 0x5f00766c is LoadLibraryA
-[+] kernel32 Function    - 0x6d555364 is GetProcAddress
-[+] kernel32 Function    - 0x42b4fa0 is VirtualAlloc
-[+] kernel32 Function    - 0xc473c85a is FlushInstructionCache
-[+] msvcrt Function      - 0xcd841e17 is memcpy
-[+] user32 Function      - 0x416f607 is MessageBoxA
-Flag = FLAG{MessageBoxA}
 ```
 ## Lab-Scramble
 Flag: `FLAG{scramble_and_using_solver_to_solve_it}`
@@ -511,7 +481,7 @@ Flag: `FLAG{just_4_simple_unpackme_challenge!}`
     ```cpp
     LOAD:0000000000005AF5 jmp     r13
     ```
-    info
+    :::info
     如何在動態取得這一行的位置呢?手動算出rebase address
     1. 首先先用靜態分析看starti的時候的offset
     2. 開始動態執行程式
@@ -547,10 +517,10 @@ Flag: `FLAG{just_4_simple_unpackme_challenge!}`
        0x7ffff7ffdb06:      ins    BYTE PTR es:[rdi],dx
        0x7ffff7ffdb07:      data16 (bad)
     ```
-    
+    :::
 2. 利用動態看r13的address會跳去哪邊$\to$0x00007ffff7ff1000
 3. 接下來我找不太到分析的地方，所以就直接c(continue)到user input的地方停下來，再看vmmap
-        vmmap
+    :::spoiler vmmap
     ```bash
     [ Legend:  Code | Heap | Stack ]
     Start              End                Offset             Perm Path
@@ -578,7 +548,7 @@ Flag: `FLAG{just_4_simple_unpackme_challenge!}`
     0x00007ffff7fff000 0x00007ffff8020000 0x0000000000000000 rw- [heap]
     0x00007ffffffdd000 0x00007ffffffff000 0x0000000000000000 rw- [stack]
     ```
-    
+    :::
     可以看到`0x00007ffff7ff8000`開始會有ELF的字樣，代表應該是他脫殼完的結果，我的作法是直接把`0x00007ffff7ff8000`~`0x00007ffff7ffd000`全部dump下來進行分析
     ```bash
     gef➤  x/s 0x00007ffff7ff8000
@@ -609,7 +579,7 @@ Flag: `FLAG{just_4_simple_unpackme_challenge!}`
     gef➤  c
     Continuing.
     adjfl
-    
+
     Breakpoint 1, 0x00007ffff7ff9229 in ?? ()
     
     ```
@@ -621,12 +591,6 @@ Flag: `FLAG{just_4_simple_unpackme_challenge!}`
        $rcx = 0x00007ffff7ffa030 → "just_a_key"
     )
     ```
-### Exploit
-```bash
-$ ./unpackme
-Enter input: just_a_key
-FLAG{just_4_simple_unpackme_challenge!}
-```
 ## HW-Baby Ransom 1
 Flag: `FLAG{e6b77096375bcff4c8bc765e599fbbc0}`
 ### 解題流程與思路
@@ -634,19 +598,20 @@ Flag: `FLAG{e6b77096375bcff4c8bc765e599fbbc0}`
 1. main function中可以直接看到下面一點的地方，上面只是一些初始化，不用管他，真正在import embedded payload或是進行攻擊的地方在下面的NetworkConfig_1DBB
 2. 說是network config其實和網路操作沒啥屁毛關係，只是前期分析的時候看到有InternetOpen相關的API就先這樣寫，再加上他給了一個https開頭的strings，但看了一圈其實只是scramble過後的payload再加上https，所以其實也和連線沒關係。簡單說一下這一段，詳細可以看一下前面MSDN的background，`InternetOpenUrlA`中帶的`0x84000000`，我看[csdn分析WannaCry的文章](https://blog.csdn.net/qq_43667823/article/details/129952684)表示，是INTERNET_FLAG_RELOAD + INTERNET_FLAG_NO_CACHE_WRITE的結果，也就是從server端拉資料下來，然後不會把結果存到cache中，但這一切我認為都是為了混淆reverse的人，因為`InternetOpenUrl`會對給予的`szUrl`進行連線，有成功的話才會進到if-statement，但他遠永不會成功，因為仔細看`szUrl`其實是`http://M17H+G+4FzeJ69F5.*f)vfquhvnv)*fwdhud)*vf)lpktud)*lj)4)*uk)',27h,'Lpfwjvjcu)Rpkejrv)Tyehu'`，所以直接分析下面的部分就好
 3. 進到part 1的地方先看到一個for loop，那個就是在還原scramble url的部分，還原的結果是`Microsoft Update`，接著下面會把path combine在一起，並且創一個folder，並設定屬性為`FILE_ATTRIBUTE_ARCHIVE` + `FILE_ATTRIBUTE_SYSTEM` + `FILE_ATTRIBUTE_HIDDEN`，所以必須把file explorer的隱藏系統檔案的選項取消，才看得到
-    ![圖片.png](D:\NTU\Second Year\Computer Security\Reverse\upload_b49bb1e72fdd5d32b849a0f3978d2040.png)
+    ![圖片.png](https://hackmd.io/_uploads/rJUGKcO7T.png)
     接著下面的nested if statement有點迷，基本上第一次執行一定會直接進到最後的else，因為基本上`lpFilename`剛創好空間，本身應該沒東西，所以`MoveFile`當然不會成功，接著就進到最後的`ImportantPart`了
 4. 持續跟進會先進到`NextStatePayload`，這一段有個小地方可以注意，也就是`(unsigned int)off_140007088()`，這是個function pointer，主要做的事情就是`isDebuggerPresent`，所以如果有使用x64dbg的話要記得開Scylla Hide的Anti Anti Debugger，這樣才會進到if statement去取得embedded pe file(雖然就算不設定，第二個判斷式也應該會是true才對)
-    ![圖片.png](D:\NTU\Second Year\Computer Security\Reverse\upload_5d74e7b6733d66bbfa4fae3af3bdf3a9.png)
+    ![圖片.png](https://hackmd.io/_uploads/rJw_q5OXa.png)
 5. 終於進到最關鍵的部分了，首先一開始遇到的function其實就是在還原embedded pe file，主要的操作是先取得resource$\to$`00007ff7f219b048`
-    ![圖片.png](D:\NTU\Second Year\Computer Security\Reverse\upload_1fcf57fea23a5ad04a4ec431fa5ae6dc.png)
+    ![圖片.png](https://hackmd.io/_uploads/BJM9hq_Xp.png)
     再藉由`LoadResource`取得真正的resource$\to$`00007ff7f219b058`
     然後取得該resource的大小$\to$`0x1ca00`
+    
     * 最重要的部分就是每兩個byte都進行XOR `0x8711`的動作，直到`0x1ca00`都做完，這一部分就是解密embedded pe file，解密完可以很明顯看到`MD`這個magic signature
-        ![圖片.png](D:\NTU\Second Year\Computer Security\Reverse\upload_1defd3f5a7f5752f453fd7d36ffede45.png)
+        ![圖片.png](https://hackmd.io/_uploads/Bk0nGouQ6.png)
     * 因此只要利用Scylla把這一部分的memory dump出來再拿去md5 file取得hash就可以了
-        ![圖片.png](D:\NTU\Second Year\Computer Security\Reverse\upload_e71dff4d844e0021f8d3b8064807ffcf.png)
-        ![圖片.png](D:\NTU\Second Year\Computer Security\Reverse\upload_92addc5c68275a8e2565388ac1790df9.png)
+        ![圖片.png](https://hackmd.io/_uploads/S1CGXjum6.png)
+        ![圖片.png](https://hackmd.io/_uploads/H1JEmjOXa.png)
 ## HW-Baby Ransom 2
 Flag: `FLAG{50_y0u_p4y_7h3_r4n50m?!hmmmmm}`
 ### 解題流程與思路
@@ -677,18 +642,18 @@ Flag: `FLAG{50_y0u_p4y_7h3_r4n50m?!hmmmmm}`
         DWORD MaximumLength;
         PUCHAR Buffer;
     } _data, key;
-    
+
     typedef NTSTATUS(WINAPI* _SystemFunction033)(
         struct ustring* memoryRegion,
         struct ustring* keyPointer
     );
     ```
-     ![圖片.png](D:\NTU\Second Year\Computer Security\Reverse\upload_34d41d93ca574833d5322d4b46649234.png)
+    ![圖片.png](https://hackmd.io/_uploads/SktO1q9X6.png)
     1. 執行這行之前，跟一下他的資料結構，首先前4 bytes是代表大小，後4 bytes代表maximum length，後8 bytes代表該資料的pointer
     2. 第一個parameter就是要加密的檔案，大小就是0x11，儲存在`0x214E5567710`，所以要加密的明文是`FLAG{test_134567}`
-        ![圖片.png](D:\NTU\Second Year\Computer Security\Reverse\upload_c40c537ace648efafeb5bfb31e2ebe47.png)
+        ![圖片.png](https://hackmd.io/_uploads/HJMYeqcXp.png)
     3. 第二個parameter就是加密所需要的key，大小是0x8，位置是`0x324E556613F`，所以加密所需的key是==2F 37 32 38 33 33 31 33==
-        ![圖片.png](D:\NTU\Second Year\Computer Security\Reverse\upload_c3dbf6b1b8e1c11fdc4d105f159cf7d9.png)
+        ![圖片.png](https://hackmd.io/_uploads/S1Oagqc76.png)
 5. 既然已經知道所有的流程就直接使用線上工具解密即可
 ## HW-Evil FlagChecker
 Flag: `FLAG{jmp1ng_a1l_ar0und}`
@@ -696,16 +661,16 @@ Flag: `FLAG{jmp1ng_a1l_ar0und}`
 首先，先用ida看主要的流程，會發現有很多jmp系列的位址都跑掉了，此時就要修復，就是data(d)和code( c)之間交錯使用，並且把那些奇怪的data byte換成nop，修把patch好的部分，就會呈現上面的source code這樣
 
 1. 一樣由上而下，首先會先進到sleep睡眠兩分鐘，並且判斷進到下一行的時候，時間是否在範圍內，這也是time based的anti debugging手法，這部分可以動態直接patch掉
-        Patch Sleep Function Result
-    ![圖片](D:\NTU\Second Year\Computer Security\Reverse\upload_b3317216c5692cf89791b72a3345530a.png)
-    ![圖片](D:\NTU\Second Year\Computer Security\Reverse\upload_902e94a94075f75af382d99a75921dd7.png)
-    
+    :::spoiler Patch Sleep Function Result
+    ![圖片](https://hackmd.io/_uploads/SkPJKTiN6.png)
+    ![圖片](https://hackmd.io/_uploads/ByKlFaiN6.png)
+    :::
 2. 接著會進到loc_401AE0，這部分應該是一個function但不知道為甚麼IDA翻譯不出來，不過看了一下source code也是蠻簡單的，就是一直跳到==sub_401220==，這個在動態也可以patch
-        Patch Anti-Debug Result
-    ![圖片](D:\NTU\Second Year\Computer Security\Reverse\upload_a3fe5b5efe4049b4a4ba3c842973441d.png)
-    
+    :::spoiler Patch Anti-Debug Result
+    ![圖片](https://hackmd.io/_uploads/r15VqajVa.png)
+    :::
 3. ==sub_401220==主要是在其他anti debug的部分，具體怎麼做不是很清楚，只知道大概是和exception handler有關係，不過我在開了scylla hide之後沒有出現甚麼特別的事情
-    ![圖片](D:\NTU\Second Year\Computer Security\Reverse\upload_6373a4550d62d1601175754ef2ced1b6.png)
+    ![圖片](https://hackmd.io/_uploads/rySec6jN6.png)
 4. 接著會進到==sub_401170==，這一段蠻重要的，就是處理一些Exception Handler的事情，然後莫名其妙的會進到0x40120F中的==InputFlag_Check==，中間的一些操作可能是被scylla hide擋掉了，不過中間也確實有檢察==IsDebuggerPresent==這東西
 5. 到了這邊就可以大膽猜測一些常見的操作，諸如scanf或是printf的function，接著我們會進到check這個function，也就是實際把我們的輸入，進行cipher操作後和內部的data bytes進行對比的過程
 6. 所以到了這邊一切都很明瞭了，主要的code如下
@@ -731,6 +696,6 @@ Flag: `FLAG{jmp1ng_a1l_ar0und}`
       }
     ```
     其中，`output[block + mem_addr_gap]`其實就是我們的input，所以exploit的邏輯就是用brute force，把所有可能都丟一遍，然後嘗試去對比有沒有和built-in cipher bytes一樣，BTW，`len`代表我們輸入的長度，合理猜測和built-in cipher bytes的長度一樣，也就是23個char，中間的sleep在動態也可以patch掉，就看自己方便
-    danger
-    在寫ROR的實作時有一個非常重要的重點要注意，也就是最後一個右旋的bit如果是0，在下一次右旋時會被忽略，也就是那個bit會消失，被當成0x的一部分，舉例來說，0x111001，右旋兩次後變成0x011110，但是最左邊的0會被當成0x的一部分，所以下一次再右旋兩次的結果會變成0x10111而不是0x100111，所以我的作法是在每次右旋之前都檢查bit length是不是都是32 bits，如果有少就padding 0在最左邊
-
+:::danger
+在寫ROR的實作時有一個非常重要的重點要注意，也就是最後一個右旋的bit如果是0，在下一次右旋時會被忽略，也就是那個bit會消失，被當成0x的一部分，舉例來說，0x111001，右旋兩次後變成0x011110，但是最左邊的0會被當成0x的一部分，所以下一次再右旋兩次的結果會變成0x10111而不是0x100111，所以我的作法是在每次右旋之前都檢查bit length是不是都是32 bits，如果有少就padding 0在最左邊
+:::
